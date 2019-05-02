@@ -1,6 +1,8 @@
 """Module which holds the Config class"""
 import os
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, TypeVar
+
+Object = TypeVar('Object')
 
 
 class Config(dict):
@@ -11,3 +13,8 @@ class Config(dict):
     @staticmethod
     def getenv(key: str) -> Optional[str]:
         return os.getenv(key)
+
+    def load_from_object(self, obj: Object) -> None:
+        for key in dir(obj):
+            if key.isupper():
+                self[key] = getattr(obj, key)
