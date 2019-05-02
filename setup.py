@@ -23,7 +23,7 @@ def get_long_description():
 setup(
     name='configuror',
     python_requires='>=3.6',
-    url='https://github.com/lewoudar/ib_client',
+    url='https://github.com/lewoudar/configuror',
     version=get_version('configuror'),
     author='Kevin Tewouda',
     author_email='lewoudar@gmail.com',
@@ -33,10 +33,11 @@ setup(
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
     zip_safe=False,
-    # install_requires=[
-    #     'yaml',
-    #     'toml',
-    # ],
+    install_requires=[
+        'yaml',
+        'toml',
+        'pygments'
+    ],
     classifiers=[
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
