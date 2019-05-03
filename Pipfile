@@ -12,7 +12,6 @@ pytest-cov = "*"
 [packages]
 toml = "*"
 pyyaml = "*"
-pygments = "*"
 
 [requires]
 python_version = "3.7"

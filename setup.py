@@ -35,8 +35,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'yaml',
-        'toml',
-        'pygments'
+        'toml'
     ],
     classifiers=[
         'Intended Audience :: Developers',
