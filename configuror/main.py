@@ -2,6 +2,8 @@
 import json
 import os
 from importlib import import_module
+import importlib.util as import_util
+from pathlib import Path
 from typing import Dict, List, Optional, TypeVar, Union
 
 from .exceptions import FileTypeError, DecodeError
@@ -29,7 +31,6 @@ class Config(dict):
     def __init__(self, mapping_files: Dict[str, List[str]] = None, files: List[str] = None,
                  ignore_file_absence: bool = False, **kwargs):
         super(Config, self).__init__(**kwargs)
-        self._decode_error_message = '{filename} is not well {file_type} formatted'
 
     @staticmethod
     def _is_path_ok(filename: str, ignore_file_absence: bool = False) -> bool:
@@ -43,7 +44,7 @@ class Config(dict):
     @staticmethod
     def _check_file_type(filename: str, file_type: str) -> None:
         if filename.split('.')[-1] not in EXTENSIONS[file_type]:
-            raise FileTypeError(f'{filename} is not a {file_type} file')
+            raise FileTypeError(filename, file_type)
 
     @staticmethod
     def getenv(key: str) -> Optional[str]:
@@ -56,6 +57,22 @@ class Config(dict):
             if key.isupper():
                 self[key] = getattr(obj, key)
 
+    def load_from_python_file(self, filename: str, ignore_file_absence: bool = False) -> bool:
+        if not isinstance(filename, str):
+            raise TypeError(f'{filename} is not a string representing a path')
+
+        if not self._is_path_ok(filename, ignore_file_absence):
+            return False
+        else:
+            try:
+                spec = import_util.spec_from_file_location(Path(filename).stem, filename)
+                module = import_util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                self.load_from_object(module)
+                return True
+            except AttributeError:
+                raise FileTypeError(filename, 'python')
+
     def load_from_json(self, filename: str, ignore_file_absence: bool = False) -> bool:
         if not self._is_path_ok(filename, ignore_file_absence):
             return False
@@ -64,5 +81,5 @@ class Config(dict):
             with open(filename) as f:
                 self.update(json.load(f))
         except json.JSONDecodeError:
-            raise DecodeError(self._decode_error_message.format(filename=filename, file_type=JSON_TYPE))
+            raise DecodeError(filename, JSON_TYPE)
         return True

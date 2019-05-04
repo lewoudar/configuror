@@ -1,11 +1,12 @@
 class ConfigurorError(Exception):
     """base error"""
-    pass
 
 
 class FileTypeError(ConfigurorError):
-    pass
+    def __init__(self, filename: str, file_type: str):
+        super().__init__(f'{filename} is not a {file_type} file')
 
 
 class DecodeError(ConfigurorError):
-    pass
+    def __init__(self, filename: str, file_type: str):
+        super().__init__(f'{filename} is not well {file_type} formatted')
