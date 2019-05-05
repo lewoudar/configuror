@@ -13,7 +13,7 @@ def test_method_raises_error_when_file_is_unknown_and_ignore_flag_is_false(confi
     with pytest.raises(FileNotFoundError) as exc_info:
         config.load_from_python_file('foo.txt')
 
-    assert 'file foo.txt not found' == str(exc_info.value)
+    assert 'file foo.txt not found on the filesystem' == str(exc_info.value)
 
 
 @pytest.mark.parametrize('filename', [2, 2.5, ['a', 'b']])

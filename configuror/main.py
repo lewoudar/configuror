@@ -8,6 +8,7 @@ from typing import Dict, List, Optional, TypeVar, Union
 
 import yaml
 from yaml.parser import ParserError as YamlParserError
+import toml
 
 from .exceptions import FileTypeError, DecodeError
 
@@ -37,15 +38,31 @@ class Config(dict):
     def __init__(self, mapping_files: Dict[str, List[str]] = None, files: List[str] = None,
                  ignore_file_absence: bool = False, **kwargs):
         super(Config, self).__init__(**kwargs)
+        self._type_error_message = '{filename} is not a string representing a path'
 
     @staticmethod
     def _path_is_ok(filename: str, ignore_file_absence: bool = False) -> bool:
-        """Checks if we can read a file."""
+        """
+        :param filename: the filename to check for.
+        :param ignore_file_absence: boolean flag to know if we raised an error if the file doesn't exist.
+        :return: True if the file exists on the filesystem, False otherwise.
+        """
         if os.path.isfile(filename):
             return True
         if ignore_file_absence:
             return False
-        raise FileNotFoundError(f'file {filename} not found')
+        raise FileNotFoundError(f'file {filename} not found on the filesystem')
+
+    def _filter_paths(self, filenames: List[str], ignore_file_absence: bool = False) -> List[str]:
+        """
+        :param filenames: list of files to check for.
+        :param ignore_file_absence: boolean flag to know if we raised an error if a file in the list doesn't exist.
+        :return: list of files guaranteed to exist on the filesystem.
+        """
+        for filename in filenames:
+            if not isinstance(filename, str):
+                raise TypeError(self._type_error_message.format(filename=filename))
+        return [filename for filename in filenames if self._path_is_ok(filename, ignore_file_absence)]
 
     @staticmethod
     def _check_file_type(filename: str, file_type: str) -> None:
@@ -65,7 +82,7 @@ class Config(dict):
 
     def load_from_python_file(self, filename: str, ignore_file_absence: bool = False) -> bool:
         if not isinstance(filename, str):
-            raise TypeError(f'{filename} is not a string representing a path')
+            raise TypeError(self._type_error_message.format(filename=filename))
 
         if not self._path_is_ok(filename, ignore_file_absence):
             return False
@@ -105,4 +122,18 @@ class Config(dict):
         return True
 
     def load_from_toml(self, filenames: Union[str, List[str]], ignore_file_absence: bool = False) -> bool:
-        pass
+        if not isinstance(filenames, (str, list)):
+            raise TypeError('filenames must represent a path or list of paths')
+        if isinstance(filenames, str):
+            if not self._path_is_ok(filenames, ignore_file_absence):
+                return False
+            filenames = [filenames]
+
+        filtered_filenames = self._filter_paths(filenames, ignore_file_absence)
+        try:
+            self.update(toml.load(filtered_filenames))
+            return True
+        except toml.TomlDecodeError:
+            raise DecodeError(message=f'one of your files is not well {TOML_TYPE} formatted')
+        except FileNotFoundError:  # This occurs when the list is empty, I just changed the error message to return
+            raise FileNotFoundError(f'the list does not contain one {TOML_TYPE} valid file')
