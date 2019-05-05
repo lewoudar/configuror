@@ -6,6 +6,9 @@ import importlib.util as import_util
 from pathlib import Path
 from typing import Dict, List, Optional, TypeVar, Union
 
+import yaml
+from yaml.parser import ParserError as YamlParserError
+
 from .exceptions import FileTypeError, DecodeError
 
 Object = TypeVar('Object')
@@ -82,4 +85,18 @@ class Config(dict):
                 self.update(json.load(f))
         except json.JSONDecodeError:
             raise DecodeError(filename, JSON_TYPE)
+        return True
+
+    def load_from_yaml(self, filename: str, ignore_file_absence: bool = False) -> bool:
+        if not self._is_path_ok(filename, ignore_file_absence):
+            return False
+
+        try:
+            with open(filename) as f:
+                data = yaml.full_load(f)
+                if not isinstance(data, dict):
+                    return False
+                self.update(data)
+        except YamlParserError:
+            raise DecodeError(filename, YAML_TYPE)
         return True
