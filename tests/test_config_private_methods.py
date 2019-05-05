@@ -6,21 +6,21 @@ from configuror.exceptions import FileTypeError
 
 
 class TestIsPathOK:
-    """test method _is_path_ok"""
+    """test method _path_is_ok"""
 
     def test_method_returns_true_when_file_exists(self, config, tempdir):
         file_path = Path(tempdir) / 'foo.txt'
         file_path.touch()
 
-        assert config._is_path_ok(file_path)
+        assert config._path_is_ok(file_path)
 
     def test_method_returns_false_when_file_does_not_exist(self, config):
-        assert not config._is_path_ok('foo', ignore_file_absence=True)
+        assert not config._path_is_ok('foo', ignore_file_absence=True)
 
     def test_method_raises_error_when_ignore_flag_is_false(self, config):
         filename = 'foo'
         with pytest.raises(FileNotFoundError) as exc_info:
-            config._is_path_ok(filename)
+            config._path_is_ok(filename)
 
         assert f'file {filename} not found' == str(exc_info.value)
 

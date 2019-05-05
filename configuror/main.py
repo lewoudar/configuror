@@ -39,7 +39,7 @@ class Config(dict):
         super(Config, self).__init__(**kwargs)
 
     @staticmethod
-    def _is_path_ok(filename: str, ignore_file_absence: bool = False) -> bool:
+    def _path_is_ok(filename: str, ignore_file_absence: bool = False) -> bool:
         """Checks if we can read a file."""
         if os.path.isfile(filename):
             return True
@@ -67,7 +67,7 @@ class Config(dict):
         if not isinstance(filename, str):
             raise TypeError(f'{filename} is not a string representing a path')
 
-        if not self._is_path_ok(filename, ignore_file_absence):
+        if not self._path_is_ok(filename, ignore_file_absence):
             return False
         else:
             try:
@@ -80,7 +80,7 @@ class Config(dict):
                 raise DecodeError(filename, PYTHON_TYPE)
 
     def load_from_json(self, filename: str, ignore_file_absence: bool = False) -> bool:
-        if not self._is_path_ok(filename, ignore_file_absence):
+        if not self._path_is_ok(filename, ignore_file_absence):
             return False
 
         try:
@@ -91,7 +91,7 @@ class Config(dict):
         return True
 
     def load_from_yaml(self, filename: str, ignore_file_absence: bool = False) -> bool:
-        if not self._is_path_ok(filename, ignore_file_absence):
+        if not self._path_is_ok(filename, ignore_file_absence):
             return False
 
         try:
@@ -103,3 +103,6 @@ class Config(dict):
         except YamlParserError:
             raise DecodeError(filename, YAML_TYPE)
         return True
+
+    def load_from_toml(self, filenames: Union[str, List[str]], ignore_file_absence: bool = False) -> bool:
+        pass
