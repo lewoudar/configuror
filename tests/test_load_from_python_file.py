@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from configuror.exceptions import FileTypeError
+from configuror.exceptions import DecodeError
 
 
 def test_method_returns_false_when_file_is_unknown_and_ignore_flag_is_true(config):
@@ -40,7 +40,7 @@ def test_method_raises_error_when_filename_is_not_a_valid_python_file(config, te
     path = Path(tempdir) / 'foo.txt'
     path.write_text('hello world!')
 
-    with pytest.raises(FileTypeError) as exc_info:
+    with pytest.raises(DecodeError) as exc_info:
         config.load_from_python_file(f'{path}')
 
-    assert f'{path} is not a python file' == str(exc_info.value)
+    assert f'{path} is not well python formatted' == str(exc_info.value)

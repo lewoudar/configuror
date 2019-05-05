@@ -21,11 +21,14 @@ INI_TYPE = 'ini'
 
 TOML_TYPE = 'toml'
 
+PYTHON_TYPE = 'python'
+
 EXTENSIONS = {
     JSON_TYPE: ['json'],
     YAML_TYPE: ['yml', 'yaml'],
     INI_TYPE: ['ini', 'cfg'],
-    TOML_TYPE: ['toml']
+    TOML_TYPE: ['toml'],
+    PYTHON_TYPE: ['py']
 }
 
 
@@ -74,7 +77,7 @@ class Config(dict):
                 self.load_from_object(module)
                 return True
             except AttributeError:
-                raise FileTypeError(filename, 'python')
+                raise DecodeError(filename, PYTHON_TYPE)
 
     def load_from_json(self, filename: str, ignore_file_absence: bool = False) -> bool:
         if not self._is_path_ok(filename, ignore_file_absence):
