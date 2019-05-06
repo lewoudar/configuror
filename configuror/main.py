@@ -9,8 +9,11 @@ from typing import Dict, List, Optional, TypeVar, Union
 import yaml
 from yaml.parser import ParserError as YamlParserError
 import toml
+# noinspection PyProtectedMember
+from configparser import ConfigParser, Error as IniDecodeError, BasicInterpolation, ExtendedInterpolation
 
 from .exceptions import FileTypeError, DecodeError
+from .utils import convert_ini_config_to_dict
 
 Object = TypeVar('Object')
 
@@ -137,3 +140,31 @@ class Config(dict):
             raise DecodeError(message=f'one of your files is not well {TOML_TYPE} formatted')
         except FileNotFoundError:  # This occurs when the list is empty, I just changed the error message to return
             raise FileNotFoundError(f'the list does not contain one {TOML_TYPE} valid file')
+
+    def load_from_ini(self, filenames: Union[str, List], ignore_file_absence: bool = False,
+                      interpolation_method: str = 'basic') -> bool:
+        # we check interpolation method
+        interpolation_error_message = 'interpolation_method must be either "basic" or "extended"'
+        if not isinstance(interpolation_method, str):
+            raise TypeError(interpolation_error_message)
+        if interpolation_method.lower() not in ['basic', 'extended']:
+            raise ValueError(interpolation_error_message)
+
+        # we check filenames
+        if not isinstance(filenames, (str, list)):
+            raise TypeError('filenames must represent a path or list of paths')
+        if isinstance(filenames, str):
+            if not self._path_is_ok(filenames, ignore_file_absence):
+                return False
+            filenames = [filenames]
+
+        filtered_filenames = self._filter_paths(filenames, ignore_file_absence)
+        try:
+            interpolation = ExtendedInterpolation() if interpolation_method.lower() == 'extended'\
+                else BasicInterpolation()
+            config = ConfigParser(interpolation=interpolation)
+            config.read(filtered_filenames)
+            self.update(convert_ini_config_to_dict(config))
+            return True
+        except IniDecodeError:
+            raise DecodeError(message=f'one of your files is not well {INI_TYPE} formatted')
