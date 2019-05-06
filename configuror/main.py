@@ -4,7 +4,7 @@ import os
 from importlib import import_module
 import importlib.util as import_util
 from pathlib import Path
-from typing import Dict, List, Optional, TypeVar, Union
+from typing import Dict, List, Optional, TypeVar, Union, Any
 
 import yaml
 from yaml.parser import ParserError as YamlParserError
@@ -160,7 +160,7 @@ class Config(dict):
 
         filtered_filenames = self._filter_paths(filenames, ignore_file_absence)
         try:
-            interpolation = ExtendedInterpolation() if interpolation_method.lower() == 'extended'\
+            interpolation = ExtendedInterpolation() if interpolation_method.lower() == 'extended' \
                 else BasicInterpolation()
             config = ConfigParser(interpolation=interpolation)
             config.read(filtered_filenames)
@@ -168,3 +168,17 @@ class Config(dict):
             return True
         except IniDecodeError:
             raise DecodeError(message=f'one of your files is not well {INI_TYPE} formatted')
+
+    def get_dict_from_namespace(self, namespace: str, lowercase: bool = True,
+                                trim_namespace: bool = True) -> Dict[str, Any]:
+        result_dict = {}
+        for key, value in self.items():
+            if not isinstance(key, str) or not key.startswith(namespace):
+                continue
+            if trim_namespace:
+                key = key[len(namespace):]
+            if lowercase:
+                key = key.lower()
+            result_dict[key] = value
+
+        return result_dict
