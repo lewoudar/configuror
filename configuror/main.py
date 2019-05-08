@@ -49,6 +49,8 @@ class Config(dict):
                  ignore_file_absence: bool = False, **kwargs):
         super(Config, self).__init__(**kwargs)
         self._type_error_message = '{filename} is not a string representing a path'
+        self.add_mapping_files(mapping_files, ignore_file_absence)
+        self.add_files(files, ignore_file_absence)
 
     @staticmethod
     def _path_is_ok(filename: str, ignore_file_absence: bool = False) -> bool:
@@ -233,6 +235,8 @@ class Config(dict):
     def add_files(self, filenames: List[str] = None, ignore_file_absence: bool = False) -> bool:
         if filenames is None:
             return False
+        if not isinstance(filenames, list):
+            raise TypeError(f'{filenames} is not a list of files')
 
         files = self._filter_paths(filenames, ignore_file_absence)
         if not files:
@@ -248,12 +252,16 @@ class Config(dict):
 
                 if extension in EXTENSIONS[PYTHON_TYPE]:
                     self.load_from_python_file(file)
+
                 elif extension in EXTENSIONS[JSON_TYPE]:
                     self.load_from_json(file)
+
                 elif extension in EXTENSIONS[TOML_TYPE]:
                     self.load_from_toml(file)
+
                 elif extension in EXTENSIONS[INI_TYPE]:
                     self.load_from_ini(file)
+
                 elif extension in EXTENSIONS[YAML_TYPE]:
                     self.load_from_yaml(file)
                 else:

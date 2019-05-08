@@ -156,6 +156,13 @@ class TestAddFiles:
     def test_method_returns_false_when_list_is_none(self, config):
         assert not config.add_files()
 
+    @pytest.mark.parametrize('filenames', [2, 2.5, {'a': 'b'}])
+    def test_method_raises_error_when_filenames_is_not_a_list(self, config, filenames):
+        with pytest.raises(TypeError) as exc_info:
+            config.add_files(filenames)
+
+        assert f'{filenames} is not a list of files' == str(exc_info.value)
+
     # this is to avoid to repeating all checks done by _filter_paths
     def test_method_calls_filter_paths_intern_method(self, config, mocker):
         filter_paths_mock = mocker.patch('configuror.main.Config._filter_paths')
