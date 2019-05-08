@@ -3,6 +3,7 @@ import json
 import os
 from importlib import import_module
 import importlib.util as import_util
+from itertools import chain
 from pathlib import Path
 from typing import Dict, List, Optional, TypeVar, Union, Any
 
@@ -37,6 +38,9 @@ EXTENSIONS = {
     PYTHON_TYPE: ['py'],
     ENV_TYPE: ['env']
 }
+# we create a list with all available extensions supported by configuror, it comes in handy
+# for the implementation of add_files method
+AVAILABLE_EXTENSIONS = list(chain(*[value for key, value in EXTENSIONS.items()]))
 
 
 class Config(dict):
@@ -225,6 +229,36 @@ class Config(dict):
                         self.load_from_dotenv(file)
 
         return file_added
+
+    def add_files(self, filenames: List[str] = None, ignore_file_absence: bool = False) -> bool:
+        if filenames is None:
+            return False
+
+        files = self._filter_paths(filenames, ignore_file_absence)
+        if not files:
+            return False
+        else:
+            for file in files:
+                extension = file.split('.')[-1]
+                if extension not in AVAILABLE_EXTENSIONS:
+                    raise UnknownExtensionError(
+                        message=f'{file} does not have a correct extension,'
+                        f' supported extensions are: {AVAILABLE_EXTENSIONS}'
+                    )
+
+                if extension in EXTENSIONS[PYTHON_TYPE]:
+                    self.load_from_python_file(file)
+                elif extension in EXTENSIONS[JSON_TYPE]:
+                    self.load_from_json(file)
+                elif extension in EXTENSIONS[TOML_TYPE]:
+                    self.load_from_toml(file)
+                elif extension in EXTENSIONS[INI_TYPE]:
+                    self.load_from_ini(file)
+                elif extension in EXTENSIONS[YAML_TYPE]:
+                    self.load_from_yaml(file)
+                else:
+                    self.load_from_dotenv(file)
+            return True
 
     def get_dict_from_namespace(self, namespace: str, lowercase: bool = True,
                                 trim_namespace: bool = True) -> Dict[str, Any]:

@@ -4,6 +4,7 @@ import os
 import pytest
 
 from configuror.exceptions import UnknownExtensionError
+from configuror.main import AVAILABLE_EXTENSIONS
 
 
 @pytest.fixture()
@@ -142,6 +143,74 @@ class TestAddMappingFiles:
             'toml': ['dummy.toml'],
         }
         return_value = config.add_mapping_files(mapping_files, ignore_file_absence=True)
+
+        assert return_value is True
+        assert 'foo' == config['A']
+        assert '/home/Kevin T' == config['PERSONAL_DIR'] == os.environ['PERSONAL_DIR']
+        assert 'TOML Example' == config['title']
+
+
+class TestAddFiles:
+    """Tests method add_files"""
+
+    def test_method_returns_false_when_list_is_none(self, config):
+        assert not config.add_files()
+
+    # this is to avoid to repeating all checks done by _filter_paths
+    def test_method_calls_filter_paths_intern_method(self, config, mocker):
+        filter_paths_mock = mocker.patch('configuror.main.Config._filter_paths')
+        config.add_files([])
+
+        filter_paths_mock.assert_called_once_with([], False)
+
+    @pytest.mark.parametrize('filenames', [[], ['foo.txt']])
+    def test_method_returns_false_when_file_list_is_empty(self, config, filenames):
+        assert not config.add_files(filenames, ignore_file_absence=True)
+
+    @pytest.mark.parametrize('filename', ['foo.txt', 'foo.ps1'])
+    def test_method_raises_error_when_a_file_does_not_have_a_supported_extension(self, tmp_path, config, filename):
+        path = tmp_path / filename
+        path.touch()
+        with pytest.raises(UnknownExtensionError) as exc_info:
+            config.add_files(['dummy.json', f'{path}'])
+
+        assert f'{path} does not have a correct extension, supported extensions are: {AVAILABLE_EXTENSIONS}' == \
+               str(exc_info.value)
+
+    def test_method_loads_different_loading_methods(self, config, mocker):
+        files = [
+            'dummy.env',
+            'dummy_module.py',
+            'dummy.ini',
+            'dummy.json',
+            'dummy.toml',
+            'dummy.yaml'
+        ]
+        load_from_json_mock = mocker.patch('configuror.main.Config.load_from_json')
+        load_from_toml_mock = mocker.patch('configuror.main.Config.load_from_toml')
+        load_from_ini_mock = mocker.patch('configuror.main.Config.load_from_ini')
+        load_from_yaml_mock = mocker.patch('configuror.main.Config.load_from_yaml')
+        load_from_python_mock = mocker.patch('configuror.main.Config.load_from_python_file')
+        load_from_dotenv_mock = mocker.patch('configuror.main.Config.load_from_dotenv')
+
+        config.add_files(files)
+
+        load_from_json_mock.assert_called_once_with('dummy.json')
+        load_from_toml_mock.assert_called_once_with('dummy.toml')
+        load_from_ini_mock.assert_called_once_with('dummy.ini')
+        load_from_yaml_mock.assert_called_once_with('dummy.yaml')
+        load_from_python_mock.assert_called_once_with('dummy_module.py')
+        load_from_dotenv_mock.assert_called_once_with('dummy.env')
+
+    @pytest.mark.usefixtures('clean_env')
+    def test_method_updates_correctly_config(self, config):
+        files = [
+            'dummy.toml',
+            'foo.ini',  # unknown file deliberately added
+            'dummy_module.py',
+            'dummy.env'
+        ]
+        return_value = config.add_files(files, ignore_file_absence=True)
 
         assert return_value is True
         assert 'foo' == config['A']

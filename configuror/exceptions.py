@@ -14,5 +14,6 @@ class DecodeError(ConfigurorError):
 
 
 class UnknownExtensionError(ConfigurorError):
-    def __init__(self, extension: str):
-        super().__init__(f'extension "{extension}" is not supported')
+    def __init__(self, extension: str = '', message: str = None):
+        error_message = message or f'extension "{extension}" is not supported'
+        super().__init__(error_message)
