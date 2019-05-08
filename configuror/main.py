@@ -13,7 +13,7 @@ import toml
 from configparser import ConfigParser, Error as IniDecodeError, BasicInterpolation, ExtendedInterpolation
 
 from .exceptions import FileTypeError, DecodeError
-from .utils import convert_ini_config_to_dict
+from .utils import convert_ini_config_to_dict, get_dict_from_dotenv_file
 
 Object = TypeVar('Object')
 
@@ -168,6 +168,20 @@ class Config(dict):
             return True
         except IniDecodeError:
             raise DecodeError(message=f'one of your files is not well {INI_TYPE} formatted')
+
+    def load_from_dotenv(self, filename: str, ignore_file_absence: bool = False) -> bool:
+        if not self._path_is_ok(filename, ignore_file_absence):
+            return False
+
+        data = get_dict_from_dotenv_file(filename)
+        if not data:
+            return False
+
+        for key, value in data.items():
+            new_value = os.path.expandvars(value)
+            os.environ[key] = new_value
+            self[key] = new_value
+        return True
 
     def get_dict_from_namespace(self, namespace: str, lowercase: bool = True,
                                 trim_namespace: bool = True) -> Dict[str, Any]:
