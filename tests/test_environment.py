@@ -35,6 +35,7 @@ class TestLoadFromDotEnv:
 
         assert not config.load_from_dotenv(path)
 
+    @pytest.mark.usefixtures('clean_env')
     def test_method_set_config_and_environment_when_giving_a_correct_file(self, config):
         keys = ['FOO', 'THOR', 'IRON', 'NAME', 'PERSONAL_DIR']
         return_value = config.load_from_dotenv('dummy.env')
@@ -47,7 +48,3 @@ class TestLoadFromDotEnv:
         assert 'RAGNAROK' == config['THOR'] == os.environ['THOR']
         assert 'Kevin T' == config['NAME'] == os.environ['NAME']
         assert '/home/Kevin T' == config['PERSONAL_DIR'] == os.environ['PERSONAL_DIR']
-
-        # cleanup to prevent interferences with other tests
-        for key in keys:
-            del os.environ[key]

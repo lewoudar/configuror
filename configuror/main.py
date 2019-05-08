@@ -12,7 +12,7 @@ import toml
 # noinspection PyProtectedMember
 from configparser import ConfigParser, Error as IniDecodeError, BasicInterpolation, ExtendedInterpolation
 
-from .exceptions import FileTypeError, DecodeError
+from .exceptions import FileTypeError, DecodeError, UnknownExtensionError
 from .utils import convert_ini_config_to_dict, get_dict_from_dotenv_file
 
 Object = TypeVar('Object')
@@ -27,12 +27,15 @@ TOML_TYPE = 'toml'
 
 PYTHON_TYPE = 'python'
 
+ENV_TYPE = 'env'
+
 EXTENSIONS = {
     JSON_TYPE: ['json'],
     YAML_TYPE: ['yml', 'yaml'],
     INI_TYPE: ['ini', 'cfg'],
     TOML_TYPE: ['toml'],
-    PYTHON_TYPE: ['py']
+    PYTHON_TYPE: ['py'],
+    ENV_TYPE: ['env']
 }
 
 
@@ -182,6 +185,46 @@ class Config(dict):
             os.environ[key] = new_value
             self[key] = new_value
         return True
+
+    def add_mapping_files(self, mapping_files: Dict[str, List[str]] = None, ignore_file_absence: bool = False) -> bool:
+        if mapping_files is None:
+            return False
+
+        file_added = False
+        for key, files in mapping_files.items():
+            lower_key = key.lower()
+            if lower_key not in EXTENSIONS.keys():
+                raise UnknownExtensionError(key)
+            if not isinstance(files, list):
+                raise TypeError(f'{files} is not a list of files')
+
+            existing_files = self._filter_paths(files, ignore_file_absence)
+            if existing_files:  # if at least one file is added, the operation is considered realized
+                file_added = True
+
+                if lower_key == JSON_TYPE:
+                    for file in existing_files:
+                        self.load_from_json(file)
+
+                if lower_key == YAML_TYPE:
+                    for file in existing_files:
+                        self.load_from_yaml(file)
+
+                if lower_key == TOML_TYPE:
+                    self.load_from_toml(existing_files)
+
+                if lower_key == INI_TYPE:
+                    self.load_from_ini(existing_files)
+
+                if lower_key == PYTHON_TYPE:
+                    for file in existing_files:
+                        self.load_from_python_file(file)
+
+                if lower_key == ENV_TYPE:
+                    for file in existing_files:
+                        self.load_from_dotenv(file)
+
+        return file_added
 
     def get_dict_from_namespace(self, namespace: str, lowercase: bool = True,
                                 trim_namespace: bool = True) -> Dict[str, Any]:
