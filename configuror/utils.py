@@ -5,8 +5,8 @@ from typing import Dict, List
 
 from .exceptions import DecodeError
 
-SET_EXPORT_EXPRESSION = re.compile(r'\w*\s*(set|export)\s+', flags=re.IGNORECASE)
-ITEM_COMPILED_EXPRESSION = re.compile(r'\w+')
+SET_EXPORT_EXPRESSION = re.compile(r'[\w/]*\s*(set|export)\s+', flags=re.IGNORECASE)
+ITEM_EXPRESSION = re.compile(r'[\w/]+')
 
 
 def convert_ini_config_to_dict(config: ConfigParser) -> dict:
@@ -53,8 +53,8 @@ def get_dict_from_dotenv_file(filename: str) -> Dict[str, str]:
             # we get key and value
             parts = new_line.split('=')
             parts = _sanitize_key_and_value(parts)
-            if len(parts) != 2 or ITEM_COMPILED_EXPRESSION.match(parts[0]) is None \
-                    or ITEM_COMPILED_EXPRESSION.match(parts[1]) is None:
+            if len(parts) != 2 or ITEM_EXPRESSION.match(parts[0]) is None \
+                    or ITEM_EXPRESSION.match(parts[1]) is None:
                 line_number = index + 1
                 raise DecodeError(message=error_message.format(filename=filename, index=line_number, line=new_line))
             result_dict[parts[0]] = parts[1]
