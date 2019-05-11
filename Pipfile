@@ -9,6 +9,7 @@ bandit = "*"
 pytest = "*"
 pytest-cov = "*"
 pytest-mock = "*"
+mkdocs = "*"
 
 [packages]
 toml = "*"
