@@ -27,18 +27,21 @@ setup(
     version=get_version('configuror'),
     author='Kevin Tewouda',
     author_email='lewoudar@gmail.com',
-    description='A configuration toolkit',
+    description='A configuration management toolkit',
     long_description=get_long_description(),
     long_description_content_type='text/markdown',
+    license='Apache 2.0',
+    keywords='configuration configuration-management toml ini yaml json dotenv',
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'yaml',
+        'pyyaml >= 5.1',
         'toml'
     ],
     classifiers=[
         'Intended Audience :: Developers',
+        'Topic :: Utilities',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
