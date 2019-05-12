@@ -13,7 +13,7 @@ import toml
 # noinspection PyProtectedMember
 from configparser import ConfigParser, Error as IniDecodeError, BasicInterpolation, ExtendedInterpolation
 
-from .exceptions import FileTypeError, DecodeError, UnknownExtensionError
+from .exceptions import DecodeError, UnknownExtensionError
 from .utils import convert_ini_config_to_dict, get_dict_from_dotenv_file
 
 Object = TypeVar('Object')
@@ -75,11 +75,6 @@ class Config(dict):
             if not isinstance(filename, str):
                 raise TypeError(self._type_error_message.format(filename=filename))
         return [filename for filename in filenames if self._path_is_ok(filename, ignore_file_absence)]
-
-    @staticmethod
-    def _check_file_type(filename: str, file_type: str) -> None:
-        if filename.split('.')[-1] not in EXTENSIONS[file_type]:
-            raise FileTypeError(filename, file_type)
 
     @staticmethod
     def getenv(key: str) -> Optional[str]:
