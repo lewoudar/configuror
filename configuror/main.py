@@ -39,7 +39,7 @@ EXTENSIONS = {
     ENV_TYPE: ['env']
 }
 # we create a list with all available extensions supported by configuror, it comes in handy
-# for the implementation of add_files method
+# for the implementation of load_from_files method
 AVAILABLE_EXTENSIONS = list(chain(*[value for key, value in EXTENSIONS.items()]))
 
 
@@ -49,8 +49,8 @@ class Config(dict):
                  ignore_file_absence: bool = False, **kwargs):
         super(Config, self).__init__(**kwargs)
         self._type_error_message = '{filename} is not a string representing a path'
-        self.add_mapping_files(mapping_files, ignore_file_absence)
-        self.add_files(files, ignore_file_absence)
+        self.load_from_mapping_files(mapping_files, ignore_file_absence)
+        self.load_from_files(files, ignore_file_absence)
 
     @staticmethod
     def _path_is_ok(filename: str, ignore_file_absence: bool = False) -> bool:
@@ -192,7 +192,8 @@ class Config(dict):
             self[key] = new_value
         return True
 
-    def add_mapping_files(self, mapping_files: Dict[str, List[str]] = None, ignore_file_absence: bool = False) -> bool:
+    def load_from_mapping_files(self, mapping_files: Dict[str, List[str]] = None,
+                                ignore_file_absence: bool = False) -> bool:
         if mapping_files is None:
             return False
 
@@ -232,7 +233,7 @@ class Config(dict):
 
         return file_added
 
-    def add_files(self, filenames: List[str] = None, ignore_file_absence: bool = False) -> bool:
+    def load_from_files(self, filenames: List[str] = None, ignore_file_absence: bool = False) -> bool:
         if filenames is None:
             return False
         if not isinstance(filenames, list):
