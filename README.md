@@ -4,7 +4,7 @@ Your configuration management toolkit!
 
 ## Why?
 
-While using [Flask](http://flask.pocoo.org/docs/1.0/), I realized that their config class could be useful for any type
+While using [Flask](http://flask.pocoo.org/docs/1.0/), I realized that their Config class could be useful for any type
 of project. And the utility became more and more obvious to me when I looked at a project like
 [Ansible](https://docs.ansible.com/ansible/latest/index.html). If you look the 
 [section](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable)
@@ -46,12 +46,11 @@ mapping_files = {
 config = Config(mapping_files=mapping_files, ignore_file_absence=True)
 ```
 
-You can define a mapping of `file_type: <files>` where the `file_type` is the type of configuration file
-where you need to retrieve variables and `<files>` is the list of files to be added from the lowest to the highest
-priority.
+You can define a mapping of `file_type: <files>` where the `file_type` is the type of configuration file and `<files>` 
+is the list of files from the lowest to the highest priority where values will be loaded.
 
 Since dictionaries are sorted starting from python3.6, the order of the keys is important as it will become the order of
-importance of your files. For example in the example above, configuror will load variables from files in the following order:
+importance of your files. For example in the example above, configuror will load values from files in the following order:
 - foo.ini
 - bar.ini
 - foo.toml
@@ -93,7 +92,7 @@ Today the file types supported are *toml*, *yaml*, *dotenv*, *ini*, *python* and
 
 ### Other usages
 
-Since `Config` object is a dict-like object, you can pass arbitrary keywords arguments to initialize default values.
+Since `Config` object is a dict-like object, you can pass arbitrary keyword arguments to initialize default values.
 
 ```python
 from configuror import Config
@@ -102,21 +101,21 @@ config = Config(FOO=2, BAR='a')
 print(config)  # will print {'FOO': 2, 'BAR': 'a'}
 ```
 
-You can combine keywords arguments, mapping files and list of files. The order in which values will be initialized is
-the following:
-- values from keywords arguments
+You can combine keyword arguments, mapping files and list of files at initialization. The order in which values will be
+initialized is the following:
+- values from keyword arguments
 - values from mapping files
 - values from list of files
 
 You can also add values from files after initialization. There are several practical methods for this:
-- `add_mapping_files(self, mapping_files: Dict[str, List[str]], ignore_file_absence: bool)`: It is in fact the method used
-under the hood when you initialized `Config` objects by passing the parameter `mapping_files`.
+- `load_from_mapping_files(self, mapping_files: Dict[str, List[str]], ignore_file_absence: bool)`: It is in fact the 
+method used under the hood when you initialized `Config` object by passing the parameter `mapping_files`.
 
-- `add_files(self, files: List[str], ignore_file_absence: bool)`: It is the method used under the hood when you
+- `load_from_files(self, files: List[str], ignore_file_absence: bool)`: It is the method used under the hood when you
 initialized `Config` objects by passing the parameter `files`. 
 
 - `load_from_object(self, obj: Union[Object, str])`: `obj` can be an object or a path to a project module
-(with dot notation). Uppercase attributes of the corresponding object will be retrieved.
+(with dotted notation). Only uppercase attributes of the corresponding object will be retrieved.
 
 - `load_from_python_file(self, filename: str, ignore_file_absence: bool)`: Loads values from an arbitrary python
 file. It would be preferable if it were not a file related to your project (i.e a module). Only uppercase variables

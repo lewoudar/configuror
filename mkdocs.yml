@@ -1,0 +1,21 @@
+site_name: Configuror
+site_description: configuror package documentation
+site_author: Kevin Tewouda
+site_url: https://configuror.readthedocs.io
+
+repo_url: https://github.com/lewoudar/configuror/
+edit_uri: tree/master/docs
+
+pages:
+  - Home: index.md
+  - Installation: installation.md
+  - Usage: usage.md
+  - API: api.md
+  - Changelog: changelog.md
+
+theme: readthedocs
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
