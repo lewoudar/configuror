@@ -1,4 +1,4 @@
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 from .main import Config, JSON_TYPE, YAML_TYPE, ENV_TYPE, TOML_TYPE, PYTHON_TYPE, INI_TYPE, EXTENSIONS
 from .exceptions import ConfigurorError, DecodeError, UnknownExtensionError

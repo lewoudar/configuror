@@ -33,7 +33,7 @@ configuror works starting from **python 3.6**. It has a few dependencies:
 
 ## Documentation
 
-Link coming soon...
+The documentation is available at https://configuror.readthedocs.io/en/latest/.
 
 ## Usage
 
