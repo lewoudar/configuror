@@ -1,5 +1,12 @@
 # configuror
 
+[![Pypi version](https://img.shields.io/pypi/v/configuror.svg)](https://pypi.org/project/configuror/)
+[![Build Status](https://travis-ci.com/lewoudar/configuror.svg?branch=master)](https://travis-ci.com/lewoudar/configuror)
+[![Windows Build Status](https://img.shields.io/appveyor/ci/lewoudar/configuror/master.svg?label=Windows)](https://ci.appveyor.com/project/lewoudar/configuror)
+[![Coverage Status](https://codecov.io/gh/lewoudar/configuror/branch/master/graphs/badge.svg?branch=master)](https://codecov.io/gh/lewoudar/configuror)
+[![Documentation Status](https://readthedocs.org/projects/configuror/badge/?version=latest)](https://configuror.readthedocs.io/en/latest/?badge=latest)
+[![License Apache 2](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+
 Your configuration management toolkit!
 
 ## Why?
