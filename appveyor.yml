@@ -15,4 +15,5 @@ build: off
 test_script:
   - python -m pipenv run flake8
   - python -m pipenv run bandit -r configuror
+  - cd tests
   - python -m pipenv run pytest
