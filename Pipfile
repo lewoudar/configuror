@@ -10,6 +10,7 @@ pytest = "*"
 pytest-cov = "*"
 pytest-mock = "*"
 mkdocs = "*"
+codecov = "*"
 
 [packages]
 toml = "*"
