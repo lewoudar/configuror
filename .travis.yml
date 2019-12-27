@@ -7,17 +7,13 @@ python:
   - '3.8'
 
 install:
-  - pip install pipenv
-  - pipenv install --dev
+  - pip install nox
 
 script:
-  - flake8
-  - bandit -r configuror
-  - cd tests
-  - pytest
+  - nox -s lint tests
 
 after_script:
-  - codecov
+  - nox -s coverage
 
 deploy:
   provider: pypi
@@ -27,4 +23,4 @@ deploy:
   distributions: "sdist bdist_wheel"
   on:
     tags: true
-    python: '3.7'
+    python: '3.8'
