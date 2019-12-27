@@ -7,13 +7,13 @@ python:
   - '3.8'
 
 install:
-  - pip install nox codecov
+  - pip install nox
 
 script:
   - nox -s lint tests
 
 after_script:
-  - codecov
+  - nox -s coverage
 
 deploy:
   provider: pypi
