@@ -1,19 +1,22 @@
 dist: xenial
 language: python
 
-python:
-  - '3.6'
-  - '3.7'
-  - '3.8'
+matrix:
+  include:
+    - python: '3.6'
+      env: NOXSESSION=tests-3.6
+    - python: '3.7'
+      env: NOXSESSION=tests-3.7
+    - python: '3.8'
+      env: NOXSESSION=tests-3.8
+    - python: '3.8'
+      env: NOXSESSION=lint
+    - python: '3.8'
+      env: NOXSESSION=docs
 
-install:
-  - pip install nox
+install: pip install -U pip setuptools nox
 
-script:
-  - nox -s lint tests
-
-after_script:
-  - nox -s coverage
+script: nox -s $NOXSESSION
 
 deploy:
   provider: pypi
@@ -23,4 +26,6 @@ deploy:
   distributions: "sdist bdist_wheel"
   on:
     tags: true
-    python: '3.8'
+    branch: master
+    repo: lewoudar/configuror
+    condition: $NOXSESSION = tests-3.8
