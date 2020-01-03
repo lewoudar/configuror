@@ -21,7 +21,9 @@ config = Config(mapping_files=mapping_files, ignore_file_absence=True)
 ````
 
 You can define a mapping of `file_type: <files>` where the `file_type` is the type of configuration file and `<files>` 
-is the list of files from the lowest to the highest priority where values will be loaded.
+is the list of files from the lowest to the highest priority where values will be loaded. To know all the keys that you
+can use in your dictionary, you can print the `EXTENSIONS` keys. The constant `EXTENSIONS` is directly importable from
+the package.
 
 Since dictionaries are ordered starting from python3.6, the order of the keys is important as it will become the order 
 of importance of your files. For example in the example above, configuror will load values from files in the following 
