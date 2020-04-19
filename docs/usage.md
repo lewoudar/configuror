@@ -159,7 +159,8 @@ outside the project. Only **uppercase** attributes of the module will be loaded.
 will be loaded.
 
 - [load_from_yaml](api.md#load_from_yaml): It loads values from a yaml file. **Uppercase and lowercase** attributes
-will be loaded.
+will be loaded. Note that even if yaml allows to define multiple [documents](https://yaml.org/spec/1.2/spec.html#document//) 
+in the same file, **this option is not supported** in configuror because it is considered irrelevant.
 
 - [load_from_ini](api.md#load_from_ini): It loads values from ini files. **Uppercase and lowercase** attributes will
 be loaded. Since the [Configparser](https://docs.python.org/3/library/configparser.html) can accept a list of files 
