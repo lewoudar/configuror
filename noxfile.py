@@ -42,7 +42,7 @@ def codecov(session):
 @nox.session(python=PYTHON_VERSIONS[-1])
 def docs(session):
     """Builds the documentation."""
-    session.install('mkdocs==1.0.4')
+    session.install('mkdocs==1.1')
     session.run('mkdocs', 'build', '--clean')
 
 
