@@ -14,6 +14,23 @@ class TestGetEnv:
     def test_getenv_returns_none_when_env_does_not_exist(self, config):
         assert config.getenv('foo') is None
 
+    def test_getenv_returns_default_value_when_one_is_passed(self, config):
+        assert 42 == config.getenv('foo', default=42)
+
+    def test_should_raise_error_when_converter_argument_is_not_callable(self, config):
+        with pytest.raises(TypeError) as exc_info:
+            config.getenv('foo', converter='foo')
+
+        assert 'cast must be a callable' == str(exc_info.value)
+
+    @pytest.mark.parametrize(('converter', 'expected_value'), [
+        (int, 1),
+        (lambda x: f'*{x}*', '*1*'),
+        (bool, True)
+    ])
+    def test_should_convert_value_if_converter_argument_is_passed(self, config, converter, expected_value):
+        assert expected_value == config.getenv('foo', '1', converter=converter)
+
 
 class TestLoadFromDotEnv:
     """tests method load_from_dotenv"""

@@ -5,7 +5,7 @@ from importlib import import_module
 import importlib.util as import_util
 from itertools import chain
 from pathlib import Path
-from typing import Dict, List, Optional, TypeVar, Union, Any
+from typing import Dict, List, Callable, TypeVar, Union, Any
 
 import yaml
 from yaml.parser import ParserError as YamlParserError
@@ -77,8 +77,14 @@ class Config(dict):
         return [filename for filename in filenames if self._path_is_ok(filename, ignore_file_absence)]
 
     @staticmethod
-    def getenv(key: str) -> Optional[str]:
-        return os.getenv(key)
+    def getenv(key: str, default: Any = None, converter: Callable = None) -> Any:
+        value = os.getenv(key, default)
+        if converter is None:
+            return value
+
+        if not callable(converter):
+            raise TypeError('cast must be a callable')
+        return converter(value)
 
     def load_from_object(self, obj: Union[Object, str]) -> None:
         if isinstance(obj, str):
