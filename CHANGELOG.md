@@ -2,6 +2,14 @@
 
 The changelog format is based on a subset of [Keep a changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Version 0.2.0
+
+Released in 2020-07-21
+
+### Fixed
+
+- Fixed a package version error.
+
 ## Version 0.1.3
 
 Released in 2020-07-21
