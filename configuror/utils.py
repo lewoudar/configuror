@@ -1,7 +1,9 @@
 """Helper functions for the project"""
 import re
 from configparser import ConfigParser
-from typing import Dict, List
+from decimal import Decimal
+from pathlib import Path
+from typing import Dict, List, Union
 
 from .exceptions import DecodeError
 
@@ -29,7 +31,7 @@ def _sanitize_key_and_value(items: List[str]) -> List[str]:
     return [key, value]
 
 
-def get_dict_from_dotenv_file(filename: str) -> Dict[str, str]:
+def get_dict_from_dotenv_file(filename: Union[Path, str]) -> Dict[str, str]:
     """
     :param filename: .env file where values are extracted.
     :return: a dict with keys and values extracted from the .env file.
@@ -60,3 +62,59 @@ def get_dict_from_dotenv_file(filename: str) -> Dict[str, str]:
             result_dict[parts[0]] = parts[1]
 
     return result_dict
+
+
+def bool_converter(value: str) -> bool:
+    """
+    :param value: a string to convert to bool.
+    :return: False if lower case value in "0", "n", "no" and "false", otherwise, returns the value returned
+    by the bool builtin function.
+    """
+    if value.lower() in ['n', '0', 'no', 'false']:
+        return False
+    return bool(value)
+
+
+def string_list(value: str) -> List[str]:
+    """
+    :param value: a string to convert to a list of strings. Possible separators are space, ";", "," and ":".
+    Note that separators other than space can be followed by one or more... spaces!
+    :return: a list of strings.
+    """
+    return re.split(r',\s*|;\s*|:\s*|\s+', value)
+
+
+def int_list(value: str) -> List[int]:
+    """
+    :param value: a string to convert to a list of int. Possible separators are space, ";", "," and ":".
+    Note that separators other than space can be followed by one or more... spaces!
+    :return: a list of int.
+    """
+    return [int(item) for item in string_list(value)]
+
+
+def float_list(value: str) -> List[float]:
+    """
+    :param value: a string to convert to a list of float. Possible separators are space, ";", "," and ":".
+    Note that separators other than space can be followed by one or more... spaces!
+    :return: a list of float.
+    """
+    return [float(item) for item in string_list(value)]
+
+
+def decimal_list(value: str) -> List[Decimal]:
+    """
+    :param value: a string to convert to a list of decimal.Decimal . Possible separators are space, ";", "," and ":".
+    Note that separators other than space can be followed by one or more... spaces!
+    :return: a list of decimal.Decimal .
+    """
+    return [Decimal(item) for item in string_list(value)]
+
+
+def path_list(value: str) -> List[Path]:
+    """
+    :param value: a string to convert to a list of pathlib.Path . Possible separators are space, ";", "," and ":".
+    Note that separators other than space can be followed by one or more... spaces!
+    :return: a list of pathlib.Path .
+    """
+    return [Path(item) for item in string_list(value)]

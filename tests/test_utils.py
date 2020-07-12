@@ -1,10 +1,15 @@
 """Tests util module"""
 from configparser import ConfigParser
+from decimal import Decimal
+from pathlib import Path
 
 import pytest
 
 # noinspection PyProtectedMember
-from configuror.utils import convert_ini_config_to_dict, get_dict_from_dotenv_file, _sanitize_key_and_value
+from configuror.utils import (
+    convert_ini_config_to_dict, get_dict_from_dotenv_file, _sanitize_key_and_value, bool_converter, string_list,
+    int_list, float_list, decimal_list, path_list
+)
 from configuror.exceptions import DecodeError
 
 
@@ -103,3 +108,79 @@ class TestGetDictFromDotEnvFile:
             get_dict_from_dotenv_file(path)
 
         assert f'file {path}: the line n°2 is not correct: "{invalid_line}"' == str(exc_info.value)
+
+
+class TestBoolConverter:
+    """Tests function bool_converter"""
+
+    @pytest.mark.parametrize('value', ['no', '0', 'False', 'N', 'n'])
+    def test_should_return_false_when_giving_appropriate_value(self, value):
+        assert bool_converter(value) is False
+
+    @pytest.mark.parametrize('value', ['yo', 'True', '1'])
+    def test_should_return_true_for_any_other_value(self, value):
+        assert bool_converter(value) is True
+
+
+@pytest.mark.parametrize(('given', 'expected'), [
+    ('foo', ['foo']),
+    ('foo:bar', ['foo', 'bar']),
+    ('foo,bar', ['foo', 'bar']),
+    ('foo bar', ['foo', 'bar']),
+    ('foo; bar', ['foo', 'bar'])
+])
+def test_string_list(given, expected):
+    """Tests function string_list"""
+    assert expected == string_list(given)
+
+
+class TestIntList:
+    """Tests function int_list"""
+
+    def test_should_call_string_list_function(self, mocker):
+        data = '1, 2, 3'
+        string_list_mock = mocker.patch('configuror.utils.string_list', return_value=[])
+        int_list(data)
+        string_list_mock.assert_called_once_with(data)
+
+    def test_should_return_int_list_when_giving_correct_input(self):
+        assert [1, 2, 3] == int_list('1, 2, 3')
+
+
+class TestFloatList:
+    """Tests function float_list"""
+
+    def test_should_call_string_list_function(self, mocker):
+        data = '1, 3.2'
+        string_list_mock = mocker.patch('configuror.utils.string_list', return_value=[])
+        float_list(data)
+        string_list_mock.assert_called_once_with(data)
+
+    def test_should_return_float_list_when_giving_correct_input(self):
+        assert [1.0, 3.2] == float_list('1, 3.2')
+
+
+class TestDecimalList:
+    """Tests function decimal_list"""
+
+    def test_should_call_string_list_function(self, mocker):
+        data = '1; 3.2'
+        string_list_mock = mocker.patch('configuror.utils.string_list', return_value=[])
+        decimal_list(data)
+        string_list_mock.assert_called_once_with(data)
+
+    def test_should_return_decimal_list_when_giving_correct_input(self):
+        assert [Decimal('1'), Decimal('3.2')] == decimal_list('1; 3.2')
+
+
+class TestPathList:
+    """Tests function path_list"""
+
+    def test_should_call_string_list_function(self, mocker):
+        data = '/tmp/bar:/usr/bin/python'
+        string_list_mock = mocker.patch('configuror.utils.string_list', return_value=[])
+        path_list(data)
+        string_list_mock.assert_called_once_with(data)
+
+    def test_should_return_path_list_when_giving_correct_input(self):
+        assert [Path('/tmp/bar'), Path('/usr/bin/python')] == path_list('/tmp/bar:/usr/bin/python')
