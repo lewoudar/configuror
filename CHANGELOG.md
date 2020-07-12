@@ -4,7 +4,7 @@ The changelog format is based on a subset of [Keep a changelog](https://keepacha
 
 ## Version 0.2.0
 
-Released in 2020-07-21
+Released in 2020-07-12
 
 ### Fixed
 
@@ -12,7 +12,7 @@ Released in 2020-07-21
 
 ## Version 0.1.3
 
-Released in 2020-07-21
+Released in 2020-07-12
 
 ### Added
 
