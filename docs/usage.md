@@ -109,7 +109,7 @@ of a module (dotted notation). Only **uppercase** attributes of the correspondin
 
 Example 1
 
-````python
+```python
 # Imagine you have a module settings.py in your project with the following variables
 FOO = 2
 bar = 'hello'
@@ -121,11 +121,11 @@ from configuror import Config
 c = Config()
 c.load_from_object('your_project.settings')
 # this will give an object with two items: {'FOO': 2, 'FOOBAR': 'world'}
-````
+```
 
 Example 2:
 
-````python
+```python
 from enum import Enum
 from configuror import Config
 
@@ -143,7 +143,7 @@ c.load_from_object(Fruit)
 c.load_from_object(Color)
 # The result will be this object:
 # {'BLUE': <Color.BLUE: 2>, 'GREEN': <Color.GREEN: 3>, 'RED': <Color.RED: 1>, 'BANANA': 2, 'TOMATOES': 4}
-````
+```
 
 !!! warning
     a dict object will not work since we cannot access attributes via the `getattr` builtin function. Since a Config
@@ -182,15 +182,15 @@ It also have the ability to expand environment variables.
  
 Example: Imagine you have a .env file like the following
  
-````.env
+```.env
 # comments are ignored
 # we will assume the HOME environment variable equals to "/home/kevin"
 export PROJECT_DIR=${HOME}/my_project
 export SETTINGS=${PROJECT_DIR}/settings.ini
 FOO=BAR
-````
+```
 
-````python
+```python
 from configuror import Config
 
 config = Config()
@@ -198,18 +198,23 @@ config = Config()
 config.load_from_dotenv('.env')
 # The result will be this object => 
 # {'PERSONAL_DIR': '/home/kevin/my_project', 'SETTINGS': '/home/kevin/my_project/settings.ini', 'FOO': 'BAR'}
-````
+```
+
+!!! note
+    Using `.env` files is a considered a good practice following the [twelve-factor pattern](https://12factor.net/config).
+    It helps to decouple code from configuration. If you use this pattern, make sure your `.env` file is not
+    committed to your source control.
 
 ## Bonus
 
-- If in your project you have some environment variables configured before running your project, you can get them
-through the convenient [getenv](api.md#getenv) method.
+- If in your project you have some environment variables you want to handle, you can get them through the convenient 
+[getenv](api.md#getenv) method. It can help to convert their value to a suitable one given a converter callback.
 
 - Sometimes you may have options starting with a common prefix and you may want to use the suffixes of these options
 as function or class constructors keyword arguments. There is a convenient method 
 [get_dict_from_namespace](api.md#get_dict_from_namespace) for this purpose.
 
-````python
+```python
 from configuror import Config
 
 # imagine you have a config like the following
@@ -223,7 +228,7 @@ config.update({
 # To extract the type, path and base_url from the configuration above, you will do this:
 image_store_info = config.get_dict_from_namespace('IMAGE_STORE_')
 # image_store_info will be this => {'type': 'fs', 'path': '/var/app/images', 'base_url': 'http://img.website.com'}
-````
+```
 
 ## Advice
 

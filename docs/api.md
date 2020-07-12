@@ -44,9 +44,12 @@ be raised. If set to `True`, no exception will be raised. By default, it is `Fal
 
 ### `getenv`
 
-Signature: `getenv(key: str) -> Optional[str]`
+Signature: `getenv(key: str, default: Any = None, converter: Callable = None) -> Any`
 
-Retrieves an environment variable. If the variable does not exist, None is returned.
+Retrieves an environment variable. If the variable does not exist, it returns the default value which is None by default.
+
+It also accepts a converter callable to convert the string to a suitable variable. There are some [examples](#utils)
+further down the page.
 
 Parameters:
 
@@ -184,6 +187,94 @@ Parameters:
 - `trim_namespace`: A flag indicating if the keys of the resulting dictionary should not include the namespace.
 It is `True` by default.
 - `lowercase`: A flag indicating if the keys of the resulting dictionary should be lowercase. It is `True` by default.
+
+## Utils
+
+These functions are especially useful in combination with [Config.getenv](#getenv).
+
+### bool_converter
+
+Signature: `bool_converter(value: str) -> bool`
+
+It is a convenient wrapper around the `bool` builtin function that converts string `no`, `n`, `0`, `false` to False. Those
+values are case-insensitive. Other values are passed to `bool` function.
+
+```python
+from configuror import Config, bool_converter
+# assuming we set environment variable DEBUG to no
+config = Config()
+debug = config.getenv('DEBUG', converter=bool_converter)  # debug is False
+```
+
+### string_list
+
+Signature: `string_list(value: str) -> List[str]`
+
+Converts a string to convert to a list of strings. Possible separators are space, `;`, `,` and `:`. Note that separators
+other than space can be followed by one or more... spaces!
+
+```python
+from configuror import Config, string_list
+# assuming we set environment variable FRUITS to "bananas, pineapples"
+config = Config()
+fruits = config.getenv('FRUITS', converter=string_list)  # fruits = ['bananas', 'pineapples']
+```
+
+### int_list
+
+Signature: `int_list(value: str) -> List[int]`
+
+Converts a string to convert to a list of integers. Possible separators are space, `;`, `,` and `:`. Note that 
+separators other than space can be followed by one or more... spaces!
+
+```python
+from configuror import Config, int_list
+# assuming we set environment variable VALUES to "2, 5, 7"
+config = Config()
+values = config.getenv('VALUES', converter=int_list)  # values = [2, 5, 7]
+```
+
+### float_list
+
+Signature: `float_list(value: str) -> List[float]`
+
+Converts a string to convert to a list of floats. Possible separators are space, `;`, `,` and `:`. Note that 
+separators other than space can be followed by one or more... spaces!
+
+```python
+from configuror import Config, float_list
+# assuming we set environment variable VALUES to "3, 5.2"
+config = Config()
+values = config.getenv('VALUES', converter=float_list)  # values = [3.0, 5.2]
+```
+
+### decimal_list
+
+Signature: `decimal_list(value: str) -> List[Decimal]`
+
+Converts a string to convert to a list of [Decimal](https://docs.python.org/3/library/decimal.html). Possible separators
+are space, `;`, `,` and `:`. Note that separators other than space can be followed by one or more... spaces!
+
+```python
+from configuror import Config, decimal_list
+# assuming we set environment variable VALUES to "3; 5.2"
+config = Config()
+values = config.getenv('VALUES', converter=decimal_list)  # values = [Decimal('3'), Decimal('5.2')]
+```
+
+### path_list
+
+Signature: `path_list(value: str) -> List[Path]`
+
+Converts a string to convert to a list of [Path](https://docs.python.org/3/library/pathlib.html). Possible separators
+are space, `;`, `,` and `:`. Note that separators other than space can be followed by one or more... spaces!
+
+```python
+from configuror import Config, path_list
+# assuming we set environment variable PATHS to "/tmp/bar:/usr/bin/python"
+config = Config()
+paths = config.getenv('PATHS', converter=path_list)  # paths = [Path('/tmp/bar'), Path('/usr/bin/python')]
+```
 
 ## Exceptions
 

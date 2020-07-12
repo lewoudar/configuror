@@ -23,7 +23,7 @@ is **why** the configuror project exists!
 
 ## Installation
 
-```console
+```bash
 pip install configuror
 ```
 
