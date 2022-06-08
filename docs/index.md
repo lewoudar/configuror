@@ -19,9 +19,3 @@ is **why** the configuror project exists!
 - The ability to ignore non-existing files in the list you passed.
 - The ability to load dotenv files to help you comply with the [12factor app](https://12factor.net/).
 - The ability to handle the main configuration file formats: json, ini, yaml and toml.
-
-## Contents
-- [Installation](installation.md)
-- [Usage](usage.md)
-- [API](api.md)
-- [Changelog](changelog.md)

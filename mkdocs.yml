@@ -6,16 +6,29 @@ site_url: https://configuror.readthedocs.io
 repo_url: https://github.com/lewoudar/configuror/
 edit_uri: tree/master/docs
 
-pages:
+nav:
   - Home: index.md
   - Installation: installation.md
   - Usage: usage.md
   - API: api.md
-  - Changelog: changelog.md
 
-theme: readthedocs
+theme:
+  name: material
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to dark mode
+    - scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/lightbulb
+        name: Switch to light mode
 
 markdown_extensions:
   - toc:
       permalink: true
   - admonition
+  - codehilite:
+      css_class: highlight

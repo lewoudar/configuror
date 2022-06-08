@@ -27,7 +27,7 @@ is **why** the configuror project exists!
 pip install configuror
 ```
 
-configuror works starting from **python 3.6**. It has a few dependencies:
+configuror works starting from **python 3.7**. It has a few dependencies:
 - [pyyaml](https://pypi.org/project/PyYAML/) >= 5.1
 - [toml](https://pypi.org/project/toml/)
 
