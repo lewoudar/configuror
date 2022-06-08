@@ -23,11 +23,7 @@ class TestGetEnv:
 
         assert 'cast must be a callable' == str(exc_info.value)
 
-    @pytest.mark.parametrize(('converter', 'expected_value'), [
-        (int, 1),
-        (lambda x: f'*{x}*', '*1*'),
-        (bool, True)
-    ])
+    @pytest.mark.parametrize(('converter', 'expected_value'), [(int, 1), (lambda x: f'*{x}*', '*1*'), (bool, True)])
     def test_should_convert_value_if_converter_argument_is_passed(self, config, converter, expected_value):
         assert expected_value == config.getenv('foo', '1', converter=converter)
 
@@ -42,10 +38,7 @@ class TestLoadFromDotEnv:
         with pytest.raises(FileNotFoundError):
             config.load_from_dotenv('foo.txt')
 
-    @pytest.mark.parametrize('lines', [
-        [''],
-        ['# comment 1', '  ', '# comment 2']
-    ])
+    @pytest.mark.parametrize('lines', [[''], ['# comment 1', '  ', '# comment 2']])
     def test_method_return_false_when_extracted_data_is_empty(self, tmp_path, config, lines):
         path = tmp_path / '.env'
         path.write_text('\n'.join(lines))

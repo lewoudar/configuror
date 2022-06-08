@@ -20,13 +20,13 @@ mapping_files = {
 config = Config(mapping_files=mapping_files, ignore_file_absence=True)
 ````
 
-You can define a mapping of `file_type: <files>` where the `file_type` is the type of configuration file and `<files>` 
+You can define a mapping of `file_type: <files>` where the `file_type` is the type of configuration file and `<files>`
 is the list of files from the lowest to the highest priority where values will be loaded. To know all the keys that you
 can use in your dictionary, you can print the `EXTENSIONS` keys. The constant `EXTENSIONS` is directly importable from
 the package.
 
-Since dictionaries are ordered starting from python3.6, the order of the keys is important as it will become the order 
-of importance of your files. For example in the example above, configuror will load values from files in the following 
+Since dictionaries are ordered starting from python3.6, the order of the keys is important as it will become the order
+of importance of your files. For example in the example above, configuror will load values from files in the following
 order:
 
 - foo.ini
@@ -38,14 +38,14 @@ order:
 !!! note
     For python files, only **uppercase** variables will be loaded. This is considered a good practice for parameter
     variables.
-    
+
 !!! note
     For ini files, only basic interpolation will be used, if you want extended interpolation, you will need to call
     [load_from_ini](api.md#load_from_ini) after `Config` initialization with interpolation_method parameter set to
     `extended`.
 
 You will notice the keyword argument `ignore_file_absence` in `Config` class initialization. If it is set to `True`, all
-files that does not exist will not raised `FileNotFoundError`. It comes in handy when you want to retrieve variables 
+files that does not exist will not raised `FileNotFoundError`. It comes in handy when you want to retrieve variables
 from files *that may or may not potentially exist*. By default this parameter is set to `False`.
 
 File extension is not necessary when you use mapping files since the key is already telling which files we work with.
@@ -71,7 +71,7 @@ highest priority.
 
 !!! warning
     File extension is **mandatory** here to help configuror to load the files properly.
-    
+
 To know file extensions supported by configuror, you can use the variable `EXTENSIONS`. it is a mapping
 `file_type: <extensions>` where `file_type` is a type of file supported like *yaml* and `extensions` is a list of
 recognized extensions for this type of file, e.g: `[yml, yaml]`
@@ -101,7 +101,7 @@ You can also add values from files after initialization. There are several pract
 - [load_from_mapping_files](api.md#load_from_mapping_files): This is in fact the method used under the hood when you
 initialized `Config` object by passing the parameter `mapping_files`.
 
-- [load_from_files](api.md#load_from_files): It is the method used under the hood when you initialized `Config` 
+- [load_from_files](api.md#load_from_files): It is the method used under the hood when you initialized `Config`
 objects by passing the parameter `files`.
 
 - [load_from_object](api.md#load_from_object): It loads values from a python object or a string corresponding to a path
@@ -155,15 +155,15 @@ c.load_from_object(Color)
 - [load_from_python_file](api.md#load_from_python_file): It loads values from a python file. The file must ideally be
 outside the project. Only **uppercase** attributes of the module will be loaded.
 
-- [load_from_json](api.md#load_from_json): It loads values from a json file. **Uppercase and lowercase** attributes 
+- [load_from_json](api.md#load_from_json): It loads values from a json file. **Uppercase and lowercase** attributes
 will be loaded.
 
 - [load_from_yaml](api.md#load_from_yaml): It loads values from a yaml file. **Uppercase and lowercase** attributes
-will be loaded. Note that even if yaml allows to define multiple [documents](https://yaml.org/spec/1.2/spec.html#document//) 
+will be loaded. Note that even if yaml allows to define multiple [documents](https://yaml.org/spec/1.2/spec.html#document//)
 in the same file, **this option is not supported** in configuror because it is considered irrelevant.
 
 - [load_from_ini](api.md#load_from_ini): It loads values from ini files. **Uppercase and lowercase** attributes will
-be loaded. Since the [Configparser](https://docs.python.org/3/library/configparser.html) can accept a list of files 
+be loaded. Since the [Configparser](https://docs.python.org/3/library/configparser.html) can accept a list of files
 at initialization, this method also accept a list of files to take advantage of this feature. You will notice in the
 signature of this method a parameter `interpolation_method`. This helps you to choose the type of interpolation you want
 to be performed on the ini files. The two values allowed are `basic` and `extended`. For more information, please read
@@ -172,16 +172,16 @@ this [documentation](https://docs.python.org/3/library/configparser.html#interpo
 !!! note
     In fact, a string other than `extended` will be considered `basic` for the `interpolation_method` parameter.
 
-- [load_from_toml](api.md#load_from_toml): It loads values from toml files. **Uppercase and lowercase** attributes will 
-be loaded. Since toml can accept a list of files to load, this method also accept a list of files to take advantage of 
+- [load_from_toml](api.md#load_from_toml): It loads values from toml files. **Uppercase and lowercase** attributes will
+be loaded. Since toml can accept a list of files to load, this method also accept a list of files to take advantage of
 this feature.
 
 - [load_from_dotenv](api.md#load_from_dotenv): It loads values from dotenv files. It allows you to start a line in your
 dotenv file with the word `export` or `set` so you can reuse the dotenv file in a PowerShell or bash script.
 It also have the ability to expand environment variables.
- 
+
 Example: Imagine you have a .env file like the following
- 
+
 ```.env
 # comments are ignored
 # we will assume the HOME environment variable equals to "/home/kevin"
@@ -196,7 +196,7 @@ from configuror import Config
 config = Config()
 # we assume the .env file is in the same directory
 config.load_from_dotenv('.env')
-# The result will be this object => 
+# The result will be this object =>
 # {'PERSONAL_DIR': '/home/kevin/my_project', 'SETTINGS': '/home/kevin/my_project/settings.ini', 'FOO': 'BAR'}
 ```
 
@@ -207,11 +207,11 @@ config.load_from_dotenv('.env')
 
 ## Bonus
 
-- If in your project you have some environment variables you want to handle, you can get them through the convenient 
+- If in your project you have some environment variables you want to handle, you can get them through the convenient
 [getenv](api.md#getenv) method. It can help to convert their value to a suitable one given a converter callback.
 
 - Sometimes you may have options starting with a common prefix and you may want to use the suffixes of these options
-as function or class constructors keyword arguments. There is a convenient method 
+as function or class constructors keyword arguments. There is a convenient method
 [get_dict_from_namespace](api.md#get_dict_from_namespace) for this purpose.
 
 ```python

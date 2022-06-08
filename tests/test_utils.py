@@ -5,12 +5,20 @@ from pathlib import Path
 
 import pytest
 
+from configuror.exceptions import DecodeError
+
 # noinspection PyProtectedMember
 from configuror.utils import (
-    convert_ini_config_to_dict, get_dict_from_dotenv_file, _sanitize_key_and_value, bool_converter, string_list,
-    int_list, float_list, decimal_list, path_list
+    _sanitize_key_and_value,
+    bool_converter,
+    convert_ini_config_to_dict,
+    decimal_list,
+    float_list,
+    get_dict_from_dotenv_file,
+    int_list,
+    path_list,
+    string_list,
 )
-from configuror.exceptions import DecodeError
 
 
 @pytest.fixture()
@@ -42,21 +50,20 @@ class TestConvertIniConfigToDict:
 class TestSanitizeKeyAndValue:
     """Tests function _sanitize_key_and_value"""
 
-    @pytest.mark.parametrize('items', [
-        [],
-        ['foo'],
-        ['foo', 'bar', 'char']
-    ])
+    @pytest.mark.parametrize('items', [[], ['foo'], ['foo', 'bar', 'char']])
     def test_should_return_the_same_list_if_items_length_is_not_equal_to_two(self, items):
         assert items == _sanitize_key_and_value(items)
 
-    @pytest.mark.parametrize(('given_items', 'expected_items'), [
-        (['key', 'value'], ['key', 'value']),
-        (['key  ', '  value'], ['key', 'value']),
-        (['key', "o'clock"], ['key', "o'clock"]),
-        (['key', '"o\'clock"'], ['key', "o'clock"]),
-        (['key', "'Big Mom'"], ['key', 'Big Mom'])
-    ])
+    @pytest.mark.parametrize(
+        ('given_items', 'expected_items'),
+        [
+            (['key', 'value'], ['key', 'value']),
+            (['key  ', '  value'], ['key', 'value']),
+            (['key', "o'clock"], ['key', "o'clock"]),
+            (['key', '"o\'clock"'], ['key', "o'clock"]),
+            (['key', "'Big Mom'"], ['key', 'Big Mom']),
+        ],
+    )
     def test_should_return_correct_sanitized_items(self, given_items, expected_items):
         assert expected_items == _sanitize_key_and_value(given_items)
 
@@ -75,7 +82,7 @@ class TestGetDictFromDotEnvFile:
             'SET_FOO  = CLIMB',
             'exportCHAR=  paint',
             '  too = much ',
-            'NAME="Kevin T"'
+            'NAME="Kevin T"',
         ]
         expected_dict = {
             'foo': 'bar',
@@ -84,23 +91,16 @@ class TestGetDictFromDotEnvFile:
             'SET_FOO': 'CLIMB',
             'exportCHAR': 'paint',
             'too': 'much',
-            'NAME': 'Kevin T'
+            'NAME': 'Kevin T',
         }
         path = tmp_path / '.env'
         path.write_text('\n'.join(content_lines))
 
         assert expected_dict == get_dict_from_dotenv_file(path)
 
-    @pytest.mark.parametrize('invalid_line', [
-        'set=foo=bar',
-        'foo =',
-        '= bar'
-    ])
+    @pytest.mark.parametrize('invalid_line', ['set=foo=bar', 'foo =', '= bar'])
     def test_should_raise_error_when_syntax_is_incorrect(self, tmp_path, invalid_line):
-        content_lines = [
-            'export NAME=FOO',
-            invalid_line
-        ]
+        content_lines = ['export NAME=FOO', invalid_line]
         path = tmp_path / '.env'
         path.write_text('\n'.join(content_lines))
 
@@ -122,13 +122,16 @@ class TestBoolConverter:
         assert bool_converter(value) is True
 
 
-@pytest.mark.parametrize(('given', 'expected'), [
-    ('foo', ['foo']),
-    ('foo:bar', ['foo', 'bar']),
-    ('foo,bar', ['foo', 'bar']),
-    ('foo bar', ['foo', 'bar']),
-    ('foo; bar', ['foo', 'bar'])
-])
+@pytest.mark.parametrize(
+    ('given', 'expected'),
+    [
+        ('foo', ['foo']),
+        ('foo:bar', ['foo', 'bar']),
+        ('foo,bar', ['foo', 'bar']),
+        ('foo bar', ['foo', 'bar']),
+        ('foo; bar', ['foo', 'bar']),
+    ],
+)
 def test_string_list(given, expected):
     """Tests function string_list"""
     assert expected == string_list(given)

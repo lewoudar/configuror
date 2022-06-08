@@ -13,7 +13,7 @@ Your configuration management toolkit!
 
 While using [Flask](http://flask.pocoo.org/docs/1.0/), I realized that their Config class could be useful for any type
 of project. And the utility became more and more obvious to me when I looked at a project like
-[Ansible](https://docs.ansible.com/ansible/latest/index.html). If you look the 
+[Ansible](https://docs.ansible.com/ansible/latest/index.html). If you look the
 [section](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable)
 where they define variable precedence, you will notice that there may be several locations for the configuration files,
 and these configuration files can be written in different formats (json, yaml..).
@@ -37,7 +37,7 @@ The documentation is available at https://configuror.readthedocs.io/en/latest/.
 
 ## Usage
 
-The main class provided by configuror is `Config`. It is an extension of a regular dict object. There are two main ways 
+The main class provided by configuror is `Config`. It is an extension of a regular dict object. There are two main ways
 to initialize it.
 
 ### Using mapping files
@@ -53,7 +53,7 @@ mapping_files = {
 config = Config(mapping_files=mapping_files, ignore_file_absence=True)
 ```
 
-You can define a mapping of `file_type: <files>` where the `file_type` is the type of configuration file and `<files>` 
+You can define a mapping of `file_type: <files>` where the `file_type` is the type of configuration file and `<files>`
 is the list of files from the lowest to the highest priority where values will be loaded.
 
 Since dictionaries are sorted starting from python3.6, the order of the keys is important as it will become the order of
@@ -67,7 +67,7 @@ importance of your files. For example in the example above, configuror will load
 For python files, only **uppercase** variables will be loaded.
 
 You will notice the keyword argument `ignore_file_absence` in `Config` class initialization. If it is set to `True`, all
-files that does not exist will not raised `FileNotFoundError`. It comes in handy when you want to retrieve variables 
+files that does not exist will not raised `FileNotFoundError`. It comes in handy when you want to retrieve variables
 from files *that may or may not potentially exist*. By default this parameter is set to `False`.
 
 File extension is not necessary when you use mapping files since the key is already telling which files we work with.
@@ -115,11 +115,11 @@ initialized is the following:
 - values from list of files
 
 You can also add values from files after initialization. There are several practical methods for this:
-- `load_from_mapping_files(self, mapping_files: Dict[str, List[str]], ignore_file_absence: bool)`: It is in fact the 
+- `load_from_mapping_files(self, mapping_files: Dict[str, List[str]], ignore_file_absence: bool)`: It is in fact the
 method used under the hood when you initialized `Config` object by passing the parameter `mapping_files`.
 
 - `load_from_files(self, files: List[str], ignore_file_absence: bool)`: It is the method used under the hood when you
-initialized `Config` objects by passing the parameter `files`. 
+initialized `Config` objects by passing the parameter `files`.
 
 - `load_from_object(self, obj: Union[Object, str])`: `obj` can be an object or a path to a project module
 (with dotted notation). Only uppercase attributes of the corresponding object will be retrieved.
@@ -136,7 +136,7 @@ are considered.
 or a list of toml files.
 
 - `load_from_ini(self, filenames: Union[str, List], ignore_file_absence: bool, interpolation_method: str = 'basic')`:
-Loads values from an ini file or a list of ini files. There are two interpolation methods that can be used: **basic** 
+Loads values from an ini file or a list of ini files. There are two interpolation methods that can be used: **basic**
 or **extended** like explained in the
 [documentation](https://docs.python.org/3/library/configparser.html#interpolation-of-values).
 

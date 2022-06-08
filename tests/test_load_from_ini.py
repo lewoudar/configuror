@@ -78,14 +78,7 @@ def test_method_raises_error_when_interpolation_method_value_is_not_valid(config
     assert 'interpolation_method must be either "basic" or "extended"' == str(exc_info.value)
 
 
-@pytest.mark.parametrize('interpolation_method', [
-    'basic',
-    'extended',
-    'BASIC',
-    'Extended',
-    'BaSic',
-    'exteNded'
-])
+@pytest.mark.parametrize('interpolation_method', ['basic', 'extended', 'BASIC', 'Extended', 'BaSic', 'exteNded'])
 def test_method_does_not_raise_error_when_interpolation_method_is_correct(tmp_path, config, interpolation_method):
     path = tmp_path / 'foo.txt'
     path.touch()
@@ -105,11 +98,7 @@ def test_method_updates_config_when_passing_a_valid_ini_file(config):
 
 
 def test_method_updates_config_when_passing_list_of_ini_files_with_basic_interpolation(tmp_path, config):
-    test_content_lines = [
-        '[Paths]',
-        'home_dir: /Users',
-        'my_dir: %(home_dir)s/kevin'
-    ]
+    test_content_lines = ['[Paths]', 'home_dir: /Users', 'my_dir: %(home_dir)s/kevin']
     path = tmp_path / 'test.ini'
     path.write_text('\n'.join(test_content_lines))
     return_value = config.load_from_ini(['dummy.ini', f'{path}'])
@@ -128,7 +117,7 @@ def test_method_updates_config_when_passing_list_of_ini_files_with_extended_inte
         'my_dir: ${home_dir}/kevin',
         'system_dir: /System',
         '[Frameworks]',
-        'path: ${Paths:system_dir}/Library/Frameworks/'
+        'path: ${Paths:system_dir}/Library/Frameworks/',
     ]
     path = tmp_path / 'test.ini'
     path.write_text('\n'.join(test_content_lines))
@@ -146,11 +135,11 @@ def test_method_raises_error_when_a_single_file_is_not_ini_formatted(config):
     with pytest.raises(DecodeError) as exc_info:
         config.load_from_ini('dummy.yaml')
 
-    assert f'one of your files is not well ini formatted' == str(exc_info.value)
+    assert 'one of your files is not well ini formatted' == str(exc_info.value)
 
 
 def test_method_raises_error_when_a_file_in_the_list_is_not_ini_formatted(config):
     with pytest.raises(DecodeError) as exc_info:
         config.load_from_ini(['dummy.ini', 'dummy.yaml'])
 
-    assert f'one of your files is not well ini formatted' == str(exc_info.value)
+    assert 'one of your files is not well ini formatted' == str(exc_info.value)
