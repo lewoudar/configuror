@@ -1,18 +1,22 @@
 # Changelog
+All notable changes to this project will be documented in this file.
 
-The changelog format is based on a subset of [Keep a changelog](https://keepachangelog.com/en/1.0.0/).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Version 0.2.0
+## Unreleased
 
-Released in 2020-07-12
+### Removed
+
+- support for python3.6
+
+## [0.2.0] - 2020-07-12
 
 ### Fixed
 
 - Fixed a package version error.
 
-## Version 0.1.3
-
-Released in 2020-07-12
+## [0.1.3] - 2020-07-12
 
 ### Added
 
@@ -24,9 +28,7 @@ Released in 2020-07-12
 - Updated method `Config.getenv` to accept two additional parameters: `default` and `converter`.
 
 
-## Version 0.1.2
-
-Released on 2020-01-05
+## [0.1.2] - 2020-01-05
 
 ### Added
 
@@ -37,9 +39,7 @@ Released on 2020-01-05
 - Changed .travis.yml and appveyor.yml to take in account nox.
 - Replaced pipenv by poetry to better manage package dependencies.
 
-## Version 0.1.1
-
-Released on 2019-05-15
+## [0.1.1] - 2019-05-15
 
 ### Added
 
@@ -49,9 +49,7 @@ Released on 2019-05-15
 
 - Changed the deploy phase in .travis.yml.
 
-## Version 0.1.0
-
-Released on 2019-05-14
+## [ 0.1.0] - 2019-05-14
 
 ### Added
 
