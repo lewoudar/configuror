@@ -18,6 +18,7 @@ def convert_ini_config_to_dict(config: ConfigParser) -> dict:
 
 # DOTENV
 
+
 def _sanitize_key_and_value(items: List[str]) -> List[str]:
     """Removes unwanted characters on key and value"""
     # if there are more than two items, we return the list unchanged, so an error will be raised later
@@ -55,8 +56,7 @@ def get_dict_from_dotenv_file(filename: Union[Path, str]) -> Dict[str, str]:
             # we get key and value
             parts = new_line.split('=')
             parts = _sanitize_key_and_value(parts)
-            if len(parts) != 2 or ITEM_EXPRESSION.match(parts[0]) is None \
-                    or ITEM_EXPRESSION.match(parts[1]) is None:
+            if len(parts) != 2 or ITEM_EXPRESSION.match(parts[0]) is None or ITEM_EXPRESSION.match(parts[1]) is None:
                 line_number = index + 1
                 raise DecodeError(message=error_message.format(filename=filename, index=line_number, line=new_line))
             result_dict[parts[0]] = parts[1]

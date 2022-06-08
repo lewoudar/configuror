@@ -14,45 +14,41 @@ def mapping():
         'IMAGE_STORE_PATH': '/var/app/images',
         'IMAGE_STORE_BASE_URL': 'http://img.website.com',
         'WORKERS': 2,
-        4: 'foo'
+        4: 'foo',
     }
 
 
 class TestGetDictFromNamespace:
     """tests method get_dict_from_namespace"""
 
-    @pytest.mark.parametrize(('expected_result', 'lowercase', 'trim_namespace'), [
-        (
-                {
-                    'type': 'fs',
-                    'path': '/var/app/images',
-                    'base_url': 'http://img.website.com'
-                }, True, True
-        ),
-        (
-                {
-                    'TYPE': 'fs',
-                    'PATH': '/var/app/images',
-                    'BASE_URL': 'http://img.website.com'
-                }, False, True
-        ),
-        (
+    @pytest.mark.parametrize(
+        ('expected_result', 'lowercase', 'trim_namespace'),
+        [
+            ({'type': 'fs', 'path': '/var/app/images', 'base_url': 'http://img.website.com'}, True, True),
+            ({'TYPE': 'fs', 'PATH': '/var/app/images', 'BASE_URL': 'http://img.website.com'}, False, True),
+            (
                 {
                     'image_store_type': 'fs',
                     'image_store_path': '/var/app/images',
-                    'image_store_base_url': 'http://img.website.com'
-                }, True, False
-        ),
-        (
+                    'image_store_base_url': 'http://img.website.com',
+                },
+                True,
+                False,
+            ),
+            (
                 {
                     'IMAGE_STORE_TYPE': 'fs',
                     'IMAGE_STORE_PATH': '/var/app/images',
-                    'IMAGE_STORE_BASE_URL': 'http://img.website.com'
-                }, False, False
-        )
-    ])
-    def test_method_return_correct_dict_with_lowercase_and_trim_namespace(self, config, mapping, expected_result,
-                                                                          lowercase, trim_namespace):
+                    'IMAGE_STORE_BASE_URL': 'http://img.website.com',
+                },
+                False,
+                False,
+            ),
+        ],
+    )
+    def test_method_return_correct_dict_with_lowercase_and_trim_namespace(
+        self, config, mapping, expected_result, lowercase, trim_namespace
+    ):
         config.update(mapping)
         previous_config = dict(config)
 
@@ -67,10 +63,7 @@ class TestLoadFromMappingFiles:
         assert not config.load_from_mapping_files()
 
     def test_method_returns_false_when_files_are_empty(self, config):
-        mapping_files = {
-            'env': ['.env'],
-            'ini': ['foo.toml']
-        }
+        mapping_files = {'env': ['.env'], 'ini': ['foo.toml']}
         assert not config.load_from_mapping_files(mapping_files, ignore_file_absence=True)
 
     @pytest.mark.parametrize('unknown_extension', ['bat', 'ps1'])
@@ -96,11 +89,7 @@ class TestLoadFromMappingFiles:
 
     # I deliberately avoided testing ini and toml methods because they call internally path_files
     def test_method_calls_filter_paths_intern_method(self, config, mocker):
-        mapping_files = {
-            'env': [],
-            'python': ['dummy.python'],
-            'yaml': []
-        }
+        mapping_files = {'env': [], 'python': ['dummy.python'], 'yaml': []}
         filter_paths_mock = mocker.patch('configuror.main.Config._filter_paths')
         filter_paths_mock.return_value = []
         config.load_from_mapping_files(mapping_files, ignore_file_absence=True)
@@ -116,7 +105,7 @@ class TestLoadFromMappingFiles:
             'toml': ['dummy.toml'],
             'ini': ['dummy.ini'],
             'yaml': ['dummy.yaml'],
-            'json': ['dummy.json']
+            'json': ['dummy.json'],
         }
         load_from_json_mock = mocker.patch('configuror.main.Config.load_from_json')
         load_from_toml_mock = mocker.patch('configuror.main.Config.load_from_toml')
@@ -181,18 +170,12 @@ class TestLoadFromFiles:
         with pytest.raises(UnknownExtensionError) as exc_info:
             config.load_from_files(['dummy.json', f'{path}'])
 
-        assert f'{path} does not have a correct extension, supported extensions are: {AVAILABLE_EXTENSIONS}' == \
-               str(exc_info.value)
+        assert f'{path} does not have a correct extension, supported extensions are: {AVAILABLE_EXTENSIONS}' == str(
+            exc_info.value
+        )
 
     def test_method_loads_different_loading_methods(self, config, mocker):
-        files = [
-            'dummy.env',
-            'dummy_module.py',
-            'dummy.ini',
-            'dummy.json',
-            'dummy.toml',
-            'dummy.yaml'
-        ]
+        files = ['dummy.env', 'dummy_module.py', 'dummy.ini', 'dummy.json', 'dummy.toml', 'dummy.yaml']
         load_from_json_mock = mocker.patch('configuror.main.Config.load_from_json')
         load_from_toml_mock = mocker.patch('configuror.main.Config.load_from_toml')
         load_from_ini_mock = mocker.patch('configuror.main.Config.load_from_ini')
@@ -211,12 +194,7 @@ class TestLoadFromFiles:
 
     @pytest.mark.usefixtures('clean_env')
     def test_method_updates_correctly_config(self, config):
-        files = [
-            'dummy.toml',
-            'foo.ini',  # unknown file deliberately added
-            'dummy_module.py',
-            'dummy.env'
-        ]
+        files = ['dummy.toml', 'foo.ini', 'dummy_module.py', 'dummy.env']  # unknown file deliberately added
         return_value = config.load_from_files(files, ignore_file_absence=True)
 
         assert return_value is True

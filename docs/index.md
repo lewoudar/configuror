@@ -6,7 +6,7 @@ Everything you need to know about configuror.
 
 While using [Flask](http://flask.pocoo.org/docs/1.0/), I realized that their Config class could be useful for any type
 of project. And the utility became more and more obvious to me when I looked at a project like
-[Ansible](https://docs.ansible.com/ansible/latest/index.html). If you look the 
+[Ansible](https://docs.ansible.com/ansible/latest/index.html). If you look the
 [section](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable)
 where they define variables precedence, you will notice that there may be several locations for the configuration files,
 and these configuration files can be written in different formats (json, yaml..).

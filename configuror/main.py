@@ -1,17 +1,20 @@
 """Module which holds the Config class"""
+import importlib.util as import_util
 import json
 import os
+
+# noinspection PyProtectedMember
+from configparser import BasicInterpolation, ConfigParser
+from configparser import Error as IniDecodeError
+from configparser import ExtendedInterpolation
 from importlib import import_module
-import importlib.util as import_util
 from itertools import chain
 from pathlib import Path
-from typing import Dict, List, Callable, TypeVar, Union, Any
+from typing import Any, Callable, Dict, List, TypeVar, Union
 
+import toml
 import yaml
 from yaml.parser import ParserError as YamlParserError
-import toml
-# noinspection PyProtectedMember
-from configparser import ConfigParser, Error as IniDecodeError, BasicInterpolation, ExtendedInterpolation
 
 from .exceptions import DecodeError, UnknownExtensionError
 from .utils import convert_ini_config_to_dict, get_dict_from_dotenv_file
@@ -36,7 +39,7 @@ EXTENSIONS = {
     INI_TYPE: ['ini', 'cfg'],
     TOML_TYPE: ['toml'],
     PYTHON_TYPE: ['py'],
-    ENV_TYPE: ['env']
+    ENV_TYPE: ['env'],
 }
 # we create a list with all available extensions supported by configuror, it comes in handy
 # for the implementation of load_from_files method
@@ -44,9 +47,13 @@ AVAILABLE_EXTENSIONS = list(chain(*[value for key, value in EXTENSIONS.items()])
 
 
 class Config(dict):
-
-    def __init__(self, mapping_files: Dict[str, List[str]] = None, files: List[str] = None,
-                 ignore_file_absence: bool = False, **kwargs):
+    def __init__(
+        self,
+        mapping_files: Dict[str, List[str]] = None,
+        files: List[str] = None,
+        ignore_file_absence: bool = False,
+        **kwargs,
+    ):
         super(Config, self).__init__(**kwargs)
         self._type_error_message = '{filename} is not a string representing a path'
         self.load_from_mapping_files(mapping_files, ignore_file_absence)
@@ -151,8 +158,9 @@ class Config(dict):
         except FileNotFoundError:  # This occurs when the list is empty, I just changed the error message to return
             raise FileNotFoundError(f'the list does not contain one {TOML_TYPE} valid file')
 
-    def load_from_ini(self, filenames: Union[str, List], ignore_file_absence: bool = False,
-                      interpolation_method: str = 'basic') -> bool:
+    def load_from_ini(
+        self, filenames: Union[str, List], ignore_file_absence: bool = False, interpolation_method: str = 'basic'
+    ) -> bool:
         # we check interpolation method
         interpolation_error_message = 'interpolation_method must be either "basic" or "extended"'
         if not isinstance(interpolation_method, str):
@@ -170,8 +178,9 @@ class Config(dict):
 
         filtered_filenames = self._filter_paths(filenames, ignore_file_absence)
         try:
-            interpolation = ExtendedInterpolation() if interpolation_method.lower() == 'extended' \
-                else BasicInterpolation()
+            interpolation = (
+                ExtendedInterpolation() if interpolation_method.lower() == 'extended' else BasicInterpolation()
+            )
             config = ConfigParser(interpolation=interpolation)
             config.read(filtered_filenames)
             self.update(convert_ini_config_to_dict(config))
@@ -193,8 +202,9 @@ class Config(dict):
             self[key] = new_value
         return True
 
-    def load_from_mapping_files(self, mapping_files: Dict[str, List[str]] = None,
-                                ignore_file_absence: bool = False) -> bool:
+    def load_from_mapping_files(
+        self, mapping_files: Dict[str, List[str]] = None, ignore_file_absence: bool = False
+    ) -> bool:
         if mapping_files is None:
             return False
 
@@ -270,14 +280,15 @@ class Config(dict):
                     self.load_from_dotenv(file)
             return True
 
-    def get_dict_from_namespace(self, namespace: str, lowercase: bool = True,
-                                trim_namespace: bool = True) -> Dict[str, Any]:
+    def get_dict_from_namespace(
+        self, namespace: str, lowercase: bool = True, trim_namespace: bool = True
+    ) -> Dict[str, Any]:
         result_dict = {}
         for key, value in self.items():
             if not isinstance(key, str) or not key.startswith(namespace):
                 continue
             if trim_namespace:
-                key = key[len(namespace):]
+                key = key[len(namespace):]  # fmt: skip
             if lowercase:
                 key = key.lower()
             result_dict[key] = value

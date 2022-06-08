@@ -59,7 +59,7 @@ Parameters:
 
 Signature: `load_from_object(obj: Union[Object, str]) -> None`
 
-Loads values from a python object or a string corresponding to a path of a module (dotted notation). 
+Loads values from a python object or a string corresponding to a path of a module (dotted notation).
 Only **uppercase** attributes of the corresponding object will be loaded.
 
 Parameters:
@@ -116,7 +116,7 @@ It returns `True` if the operation was successful and `False` otherwise.
 Parameters:
 
 - `filenames`: It can be a path to a toml file or a list of toml file paths.
-- `ignore_file_absence`: If set to `True`, no `FileNotFoundError` will be raised if a file does not exist, if `False` 
+- `ignore_file_absence`: If set to `True`, no `FileNotFoundError` will be raised if a file does not exist, if `False`
 an error will be raised. It is `False` by default.
 
 ### `load_from_ini`
@@ -129,7 +129,7 @@ It returns `True` if the operation was successful and `False` otherwise.
 Parameters:
 
 - `filenames`: It can be a path to an ini file or a list of ini file paths.
-- `ignore_file_absence`: If set to `True`, no `FileNotFoundError` will be raised if a file does not exist, if `False` 
+- `ignore_file_absence`: If set to `True`, no `FileNotFoundError` will be raised if a file does not exist, if `False`
 an error will be raised. It is `False` by default.
 - `interpolation_method`: A string that can take the value `basic` or `extended`. It represents the
 [interpolation](https://docs.python.org/3/library/configparser.html#interpolation-of-values) used to load values.
@@ -158,7 +158,7 @@ Parameters:
 
 - `mapping_files`: A mapping where the _key_ is the type of the file and the _value_ is the list of files to be loaded
 from the lowest to the highest priority.
-- `ignore_file_absence`: If set to `True`, no `FileNotFoundError` will be raised if a file does not exist, if `False` 
+- `ignore_file_absence`: If set to `True`, no `FileNotFoundError` will be raised if a file does not exist, if `False`
 an error will be raised. It is `False` by default.
 
 ### `load_from_files`
@@ -172,7 +172,7 @@ It returns `True` if the operation was successful and `False` otherwise.
 Parameters:
 
 - `filenames`: A list of files to be loaded from the lowest to the highest priority.
-- `ignore_file_absence`: If set to `True`, no `FileNotFoundError` will be raised if a file does not exist, if `False` 
+- `ignore_file_absence`: If set to `True`, no `FileNotFoundError` will be raised if a file does not exist, if `False`
 an error will be raised. It is `False` by default.
 
 ### `get_dict_from_namespace`
@@ -224,7 +224,7 @@ fruits = config.getenv('FRUITS', converter=string_list)  # fruits = ['bananas', 
 
 Signature: `int_list(value: str) -> List[int]`
 
-Converts a string to convert to a list of integers. Possible separators are space, `;`, `,` and `:`. Note that 
+Converts a string to convert to a list of integers. Possible separators are space, `;`, `,` and `:`. Note that
 separators other than space can be followed by one or more... spaces!
 
 ```python
@@ -238,7 +238,7 @@ values = config.getenv('VALUES', converter=int_list)  # values = [2, 5, 7]
 
 Signature: `float_list(value: str) -> List[float]`
 
-Converts a string to convert to a list of floats. Possible separators are space, `;`, `,` and `:`. Note that 
+Converts a string to convert to a list of floats. Possible separators are space, `;`, `,` and `:`. Note that
 separators other than space can be followed by one or more... spaces!
 
 ```python
