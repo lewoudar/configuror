@@ -288,9 +288,7 @@ class Config(dict):
             if not isinstance(key, str) or not key.startswith(namespace):
                 continue
             if trim_namespace:
-                # fmt: off
-                key = key[len(namespace):]
-                # fmt: on
+                key = key[len(namespace):]  # fmt: skip
             if lowercase:
                 key = key.lower()
             result_dict[key] = value
