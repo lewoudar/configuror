@@ -4,7 +4,7 @@
 ![](https://github.com/lewoudar/configuror/workflows/CI/badge.svg)
 [![Coverage Status](https://codecov.io/gh/lewoudar/configuror/branch/master/graphs/badge.svg?branch=master)](https://codecov.io/gh/lewoudar/configuror)
 [![Documentation Status](https://readthedocs.org/projects/configuror/badge/?version=latest)](https://configuror.readthedocs.io/en/latest/?badge=latest)
-[![Code Style](https://img.shields.io/badge/code%20style-black-black)](https://github.com/wntrblm/nox)
+[![Code Style](https://img.shields.io/badge/code%20style-black-black)](https://github.com/lewoudar/configuror)
 [![License Apache 2](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 Your configuration management toolkit!
