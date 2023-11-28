@@ -1,11 +1,12 @@
 # configuror
 
 [![Pypi version](https://img.shields.io/pypi/v/configuror.svg)](https://pypi.org/project/configuror/)
-![](https://github.com/lewoudar/configuror/workflows/CI/badge.svg)
+[![](https://github.com/lewoudar/configuror/workflows/CI/badge.svg)](https://github.com/lewoudar/configuror/actions)
 [![Coverage Status](https://codecov.io/gh/lewoudar/configuror/branch/master/graphs/badge.svg?branch=master)](https://codecov.io/gh/lewoudar/configuror)
 [![Documentation Status](https://readthedocs.org/projects/configuror/badge/?version=latest)](https://configuror.readthedocs.io/en/latest/?badge=latest)
-[![Code Style](https://img.shields.io/badge/code%20style-black-black)](https://github.com/lewoudar/configuror)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/lewoudar/configuror)
 [![License Apache 2](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://github.com/lewoudar/configuror)
 
 Your configuration management toolkit!
 

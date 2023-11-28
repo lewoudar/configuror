@@ -11,7 +11,7 @@ security: # configuration for the `safety check` command
             reason: |
                 The pytest team doesn't recognize this issue as critical, more information here:
                 https://github.com/pytest-dev/py/issues/287
-            expires: '2024-01-01'
+            expires: '2024-05-01'
     continue-on-vulnerability-error: False # Suppress non-zero exit codes when vulnerabilities are found. Enable this in pipelines and CI/CD processes if you want to pass builds that have vulnerabilities. We recommend you set this to False.
 alert: # configuration for the `safety alert` command
     security:
