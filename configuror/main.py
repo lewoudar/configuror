@@ -208,7 +208,7 @@ class Config(dict):
             TOML_TYPE: self.load_from_toml,
             INI_TYPE: self.load_from_ini,
             PYTHON_TYPE: self.load_from_python_file,
-            ENV_TYPE: self.load_from_dotenv
+            ENV_TYPE: self.load_from_dotenv,
         }
         if (load_callable := mapping.get(file_type)) is not None:
             if file_type in (INI_TYPE, TOML_TYPE):
