@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "configuror"
-version = "0.2.0"
+version = "0.3.0"
 description = "A configuration management toolkit"
 authors = ["lewoudar <lewoudar@gmail.com>"]
 license = "Apache-2.0"
