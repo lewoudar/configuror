@@ -4,13 +4,12 @@ import json
 import os
 
 # noinspection PyProtectedMember
-from configparser import BasicInterpolation, ConfigParser
+from configparser import BasicInterpolation, ConfigParser, ExtendedInterpolation
 from configparser import Error as IniDecodeError
-from configparser import ExtendedInterpolation
 from importlib import import_module
 from itertools import chain
 from pathlib import Path
-from typing import Any, Callable, Dict, List, TypeVar, Union
+from typing import Any, Callable, Dict, List, Optional, TypeVar, Union
 
 import toml
 import yaml
@@ -43,18 +42,18 @@ EXTENSIONS = {
 }
 # we create a list with all available extensions supported by configuror, it comes in handy
 # for the implementation of load_from_files method
-AVAILABLE_EXTENSIONS = list(chain(*[value for key, value in EXTENSIONS.items()]))
+AVAILABLE_EXTENSIONS = list(chain(*[value for value in EXTENSIONS.values()]))
 
 
 class Config(dict):
     def __init__(
         self,
-        mapping_files: Dict[str, List[str]] = None,
-        files: List[str] = None,
+        mapping_files: Optional[Dict[str, List[str]]] = None,
+        files: Optional[List[str]] = None,
         ignore_file_absence: bool = False,
         **kwargs,
     ):
-        super(Config, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._type_error_message = '{filename} is not a string representing a path'
         self.load_from_mapping_files(mapping_files, ignore_file_absence)
         self.load_from_files(files, ignore_file_absence)
@@ -84,7 +83,7 @@ class Config(dict):
         return [filename for filename in filenames if self._path_is_ok(filename, ignore_file_absence)]
 
     @staticmethod
-    def getenv(key: str, default: Any = None, converter: Callable = None) -> Any:
+    def getenv(key: str, default: Any = None, converter: Optional[Callable] = None) -> Any:
         value = os.getenv(key, default)
         if converter is None:
             return value
@@ -113,8 +112,8 @@ class Config(dict):
                 spec.loader.exec_module(module)
                 self.load_from_object(module)
                 return True
-            except AttributeError:
-                raise DecodeError(filename, PYTHON_TYPE)
+            except AttributeError as e:
+                raise DecodeError(filename, PYTHON_TYPE) from e
 
     def load_from_json(self, filename: str, ignore_file_absence: bool = False) -> bool:
         if not self._path_is_ok(filename, ignore_file_absence):
@@ -123,8 +122,8 @@ class Config(dict):
         try:
             with open(filename) as f:
                 self.update(json.load(f))
-        except json.JSONDecodeError:
-            raise DecodeError(filename, JSON_TYPE)
+        except json.JSONDecodeError as e:
+            raise DecodeError(filename, JSON_TYPE) from e
         return True
 
     def load_from_yaml(self, filename: str, ignore_file_absence: bool = False) -> bool:
@@ -137,8 +136,8 @@ class Config(dict):
                 if not isinstance(data, dict):
                     return False
                 self.update(data)
-        except YamlParserError:
-            raise DecodeError(filename, YAML_TYPE)
+        except YamlParserError as e:
+            raise DecodeError(filename, YAML_TYPE) from e
         return True
 
     def load_from_toml(self, filenames: Union[str, List[str]], ignore_file_absence: bool = False) -> bool:
@@ -153,10 +152,10 @@ class Config(dict):
         try:
             self.update(toml.load(filtered_filenames))
             return True
-        except toml.TomlDecodeError:
-            raise DecodeError(message=f'one of your files is not well {TOML_TYPE} formatted')
-        except FileNotFoundError:  # This occurs when the list is empty, I just changed the error message to return
-            raise FileNotFoundError(f'the list does not contain one {TOML_TYPE} valid file')
+        except toml.TomlDecodeError as e:
+            raise DecodeError(message=f'one of your files is not well {TOML_TYPE} formatted') from e
+        except FileNotFoundError as e:  # This occurs when the list is empty, I just changed the error message to return
+            raise FileNotFoundError(f'the list does not contain one {TOML_TYPE} valid file') from e
 
     def load_from_ini(
         self, filenames: Union[str, List], ignore_file_absence: bool = False, interpolation_method: str = 'basic'
@@ -185,8 +184,8 @@ class Config(dict):
             config.read(filtered_filenames)
             self.update(convert_ini_config_to_dict(config))
             return True
-        except IniDecodeError:
-            raise DecodeError(message=f'one of your files is not well {INI_TYPE} formatted')
+        except IniDecodeError as e:
+            raise DecodeError(message=f'one of your files is not well {INI_TYPE} formatted') from e
 
     def load_from_dotenv(self, filename: str, ignore_file_absence: bool = False) -> bool:
         if not self._path_is_ok(filename, ignore_file_absence):
@@ -202,16 +201,32 @@ class Config(dict):
             self[key] = new_value
         return True
 
+    def _load_from_mapping_file(self, file_type: str, existing_files: List[str]) -> None:
+        mapping = {
+            JSON_TYPE: self.load_from_json,
+            YAML_TYPE: self.load_from_yaml,
+            TOML_TYPE: self.load_from_toml,
+            INI_TYPE: self.load_from_ini,
+            PYTHON_TYPE: self.load_from_python_file,
+            ENV_TYPE: self.load_from_dotenv
+        }
+        if (load_callable := mapping.get(file_type)) is not None:
+            if file_type in (INI_TYPE, TOML_TYPE):
+                load_callable(existing_files)
+            else:
+                for file in existing_files:
+                    load_callable(file)
+
     def load_from_mapping_files(
-        self, mapping_files: Dict[str, List[str]] = None, ignore_file_absence: bool = False
+        self, mapping_files: Optional[Dict[str, List[str]]] = None, ignore_file_absence: bool = False
     ) -> bool:
         if mapping_files is None:
             return False
 
         file_added = False
         for key, files in mapping_files.items():
-            lower_key = key.lower()
-            if lower_key not in EXTENSIONS.keys():
+            file_type = key.lower()
+            if file_type not in EXTENSIONS.keys():
                 raise UnknownExtensionError(key)
             if not isinstance(files, list):
                 raise TypeError(f'{files} is not a list of files')
@@ -219,32 +234,29 @@ class Config(dict):
             existing_files = self._filter_paths(files, ignore_file_absence)
             if existing_files:  # if at least one file is added, the operation is considered realized
                 file_added = True
-
-                if lower_key == JSON_TYPE:
-                    for file in existing_files:
-                        self.load_from_json(file)
-
-                if lower_key == YAML_TYPE:
-                    for file in existing_files:
-                        self.load_from_yaml(file)
-
-                if lower_key == TOML_TYPE:
-                    self.load_from_toml(existing_files)
-
-                if lower_key == INI_TYPE:
-                    self.load_from_ini(existing_files)
-
-                if lower_key == PYTHON_TYPE:
-                    for file in existing_files:
-                        self.load_from_python_file(file)
-
-                if lower_key == ENV_TYPE:
-                    for file in existing_files:
-                        self.load_from_dotenv(file)
+                self._load_from_mapping_file(file_type, existing_files)
 
         return file_added
 
-    def load_from_files(self, filenames: List[str] = None, ignore_file_absence: bool = False) -> bool:
+    def _load_from_files(self, file: str, extension: str) -> None:
+        if extension in EXTENSIONS[PYTHON_TYPE]:
+            self.load_from_python_file(file)
+
+        elif extension in EXTENSIONS[JSON_TYPE]:
+            self.load_from_json(file)
+
+        elif extension in EXTENSIONS[TOML_TYPE]:
+            self.load_from_toml(file)
+
+        elif extension in EXTENSIONS[INI_TYPE]:
+            self.load_from_ini(file)
+
+        elif extension in EXTENSIONS[YAML_TYPE]:
+            self.load_from_yaml(file)
+        else:
+            self.load_from_dotenv(file)
+
+    def load_from_files(self, filenames: Optional[List[str]] = None, ignore_file_absence: bool = False) -> bool:
         if filenames is None:
             return False
         if not isinstance(filenames, list):
@@ -262,22 +274,7 @@ class Config(dict):
                         f' supported extensions are: {AVAILABLE_EXTENSIONS}'
                     )
 
-                if extension in EXTENSIONS[PYTHON_TYPE]:
-                    self.load_from_python_file(file)
-
-                elif extension in EXTENSIONS[JSON_TYPE]:
-                    self.load_from_json(file)
-
-                elif extension in EXTENSIONS[TOML_TYPE]:
-                    self.load_from_toml(file)
-
-                elif extension in EXTENSIONS[INI_TYPE]:
-                    self.load_from_ini(file)
-
-                elif extension in EXTENSIONS[YAML_TYPE]:
-                    self.load_from_yaml(file)
-                else:
-                    self.load_from_dotenv(file)
+                self._load_from_files(file, extension)
             return True
 
     def get_dict_from_namespace(
